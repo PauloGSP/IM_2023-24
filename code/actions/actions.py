@@ -66,27 +66,70 @@ class ActionDefaultFallback(Action):
         
         # Revert user message which led to fallback.
         return [UserUtteranceReverted()]
-
-class SwitchLightsAction(Action):
+    
+class ActionListAllEvents(Action):
+    
     def name(self) -> Text:
-        return "action_switch_lights"
-   
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-       
-        print(tracker.get_slot("switch") + "--" + tracker.get_slot("place"))   
-        #tracker.lastest_message["entities"]  [0] - entity - value
-        print("Confiança: ", tracker.latest_message["intent"].get("confidence"))          
+        return "action_list_all_events"
+    
+    async def run(
+            self, 
+            dispatcher: CollectingDispatcher, 
+            tracker: Tracker, 
+            domain: Dict[Text, Any]
+        ) -> List[Dict[Text, Any]]:
+
         if tracker.latest_message["intent"].get("confidence") < 0.8:
             dispatcher.utter_message(response="utter_default")
-            return [UserUtteranceReverted()]
-        """
-        switcher = homecontrol.SwitchLights(lightsimulator)
-        message = switcher.switchlight(tracker.get_slot("switch"), tracker.get_slot("place"))
-        dispatcher.utter_message(message)
-        return [SlotSet("place", None), SlotSet("switch", None)]
-         """
+
+        events_list = None # TODO FAZER A SAUCE :)
+
+        dispatcher.utter_message(response="utter_events_listed", events=events_list)
+
+class ActionListAllEventsOfADate(Action):
+    
+    def name(self) -> Text:
+        return "action_list_all_events_of_a_date"
+    
+    async def run(
+            self, 
+            dispatcher: CollectingDispatcher, 
+            tracker: Tracker, 
+            domain: Dict[Text, Any]
+        ) -> List[Dict[Text, Any]]:
+
+        if tracker.latest_message["intent"].get("confidence") < 0.8:
+            dispatcher.utter_message(response="utter_default")
+
+        day = tracker.get_slot('day')
+        month = tracker.get_slot('month')
+        year = tracker.get_slot('year')
+
+        events_list = None # TODO FAZER A SAUCE :)
+
+        dispatcher.utter_message(response="utter_confirm_date", day=day, month=month, year=year)
+        dispatcher.utter_message(response="utter_events_listed", events=events_list)
+
+# class SwitchLightsAction(Action):
+#     def name(self) -> Text:
+#         return "action_switch_lights"
+   
+#     def run(self, dispatcher: CollectingDispatcher,
+#             tracker: Tracker,
+#             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+       
+#         print(tracker.get_slot("switch") + "--" + tracker.get_slot("place"))   
+#         #tracker.lastest_message["entities"]  [0] - entity - value
+#         print("Confiança: ", tracker.latest_message["intent"].get("confidence"))          
+#         if tracker.latest_message["intent"].get("confidence") < 0.8:
+#             dispatcher.utter_message(response="utter_default")
+#             return [UserUtteranceReverted()]
+#         """
+#         switcher = homecontrol.SwitchLights(lightsimulator)
+#         message = switcher.switchlight(tracker.get_slot("switch"), tracker.get_slot("place"))
+#         dispatcher.utter_message(message)
+#         return [SlotSet("place", None), SlotSet("switch", None)]
+#          """
 
 class ActionAfirmar(Action):
     
@@ -102,7 +145,7 @@ class ActionAfirmar(Action):
         write_log("Confiança: " + str(tracker.latest_message["intent"].get("confidence")) + "\n")
         
         msg = {"comando": "confirmar"}
-    #    publish.single(topic="comandos/voz/UI", payload=json.dumps(msg), hostname="localhost")
+        # publish.single(topic="comandos/voz/UI", payload=json.dumps(msg), hostname="localhost")
         
         write_log("Actions: " + "Afirmar: " + "exit\n")
         
@@ -122,7 +165,7 @@ class ActionNegar(Action):
         write_log("Confiança: " + str(tracker.latest_message["intent"].get("confidence")) + "\n")
         
         msg = {"comando": "negar"}
-        #publish.single(topic="comandos/voz/UI", payload=json.dumps(msg), hostname="localhost")
+        # publish.single(topic="comandos/voz/UI", payload=json.dumps(msg), hostname="localhost")
         
         write_log("Actions: " + "Negar: " + "exit\n")
         
