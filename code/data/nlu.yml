@@ -1,24 +1,36 @@
 version: "3.1"
 nlu:
+- regex: day
+  examples: |
+    - \b(0?[1-9]|[12][0-9]|3[01])\b
+
+- regex: month
+  examples: |
+    - \b(Janeiro|Fevereiro|Março|Abril|Maio|Junho|Julho|Agosto|Setembro|Outubro|Novembro|Dezembro)\b
+
+- regex: year
+  examples: |
+    - \b(19|20)\d{2}\b
+
 - intent: greet
   examples: |
-    - Oi Assistente
-    - Bom dia, Assistente
-    - Boa tarde, Assistente
-    - Boa noite, Assistente
-    - Olá Assistente
-    - Olá assistente
+    - Oi Calendário
+    - Bom dia, Calendário
+    - Boa tarde, Calendário
+    - Boa noite, Calendário
+    - Olá Calendário
+    - Olá calendário
     - olá
-    - olá assistente
-    - olá assistnete
+    - olá calendário
+    - olá calendário
     
 - intent: goodbye
   examples: |
-    - Xau, Assistente
-    - Adeus, Assistente
-    - Até logo, Assistente
-    - Boa noite, Assistente
-    - Até amanhã, Assistente
+    - Xau, Calendário
+    - Adeus, Calendário
+    - Até logo, Calendário
+    - Boa noite, Calendário
+    - Até amanhã, Calendário
 
 - intent: affirm
   examples: |
@@ -39,35 +51,46 @@ nlu:
     - Não gosto assim
     - Nem por isso
 
-- intent: light_switch
-  examples: |
-    - [Liga](switch) a luz da [sala](place), por favor
-    - Podes [ligar](switch) a luz da [cozinha](place)?
-    - Podes [desligar](switch) a luz do [quarto](place)?
-    - [Acende-me](switch) a luz da [entrada](place)
-    - [Apaga](switch) a luz do espelho(place)
-    - Podes [acender](switch) a luz da [casa de banho](place)?
-    - Podes [apagar](switch) a luz da [dispensa](place)?
-    - Podes [desligar](switch) a luz do [quarto e da casa de banho](place)?
-    - [Liga](switch) a luz da [sala](place)
-    - [Liga](switch) a luz do [quarto](place)
-    - [Desliga](switch) a luz do [quarto](place)
+  - intent: list_all_events
+    examples: |
+      - Lista os eventos 
+      - Lista todos os eventos 
+      - Lista os eventos, por favor
+      - Lista todos os eventos, por favor
+      - Podes listar os eventos?
+      - Podes listar os eventos, por favor?
+      - Podes listar todos os eventos?
+      - Podes listar todos os eventos, por favor?
 
-- intent: change_color
-  examples: |
-    - Mudar a cor do [quadrado](shape) para  [verde](color)
-    - Mudar o [retangulo](shape) para  [vermelho](color)
-    - Alterar a cor do [circulo](shape) para  [amarelo](color)
-    - Mudar a cor do [quadrado](shape) para  [azul](color)
-    - Alterar o [circulo](shape) para  [verde](color)
-    - Mudar a cor do [triangulo](shape) para  [vermelho](color)
-    - Por o [circulo](shape) em  [amarelo](color)
-    - Mudar para [azul](color) o [triangulo](shape) 
-    - Alterar para [amarelo](color) o [quadrado](shape)
-    - Alterar o [circulo](shape) para  [castanho](color)
-    - Mudar o [quadrado](shape) para  [cinzento](color)
-    - Alterar o [triangulo](shape) para  [laranja](color)
-    - Por a cor do [circulo](shape) em  [rosa](color)
-    - Mudar a cor do [triangulo](shape) para  [preto](color)
-    - Por o [circulo](shape) em  [branco](color)
-    - Mudar para [azul](color) o [circulo](shape) 
+  - intent: list_all_events_of_a_date
+    examples: |
+      - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year)
+#      - Lista todos os eventos  de [hoje](day)
+#      - Lista os eventos de [hoje](day), por favor
+#      - Lista todos os eventos de [hoje](day), por favor
+#      - Podes listar os eventos de [hoje](day)?
+#      - Podes listar os eventos de [hoje](day), por favor?
+#      - Podes listar todos os eventos de [hoje](day)?
+#      - Podes listar todos os eventos de [hoje](day), por favor?
+#      - Lista os eventos de [amanhã](day)
+#      - Lista todos os eventos de [amanhã](day)
+#      - Lista os eventos de [amanhã](day), por favor
+#      - Lista todos os eventos de [amanhã](day), por favor
+#      - Podes listar os eventos de [amanhã](day)?
+#      - Podes listar os eventos de [amanhã](day), por favor?
+#      - Podes listar todos os eventos de [amanhã](day)?
+#      - Podes listar todos os eventos de [amanhã](day), por favor?
+
+# - intent: light_switch
+#   examples: |
+#     - [Liga](switch) a luz da [sala](place), por favor
+#     - Podes [ligar](switch) a luz da [cozinha](place)?
+#     - Podes [desligar](switch) a luz do [quarto](place)?
+#     - [Acende-me](switch) a luz da [entrada](place)
+#     - [Apaga](switch) a luz do espelho(place)
+#     - Podes [acender](switch) a luz da [casa de banho](place)?
+#     - Podes [apagar](switch) a luz da [dispensa](place)?
+#     - Podes [desligar](switch) a luz do [quarto e da casa de banho](place)?
+#     - [Liga](switch) a luz da [sala](place)
+#     - [Liga](switch) a luz do [quarto](place)
+#     - [Desliga](switch) a luz do [quarto](place)

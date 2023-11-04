@@ -12,10 +12,20 @@ rules:
   - intent: goodbye
   - action: utter_goodbye
 
-- rule: switchonofflights
+- rule: list_all_events
   steps:
-  - intent: light_switch
-  - action: action_switch_lights
+  - intent: list_all_events
+  - action: action_list_all_events
+
+- rule: list_all_events_of_a_date
+  steps:
+  - intent: list_all_events_of_a_date
+  - action: action_list_all_events_of_a_date
+
+# - rule: switchonofflights
+#   steps:
+#   - intent: light_switch
+#   - action: action_switch_lights
 
 # - rule: Add_reminder to calendar
 #   steps:
