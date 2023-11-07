@@ -26,18 +26,45 @@
 #
 #         return []
 
+from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from rasa_sdk import Action, Tracker
+from rasa_sdk.events import UserUtteranceReverted
+from rasa_sdk.executor import CollectingDispatcher
 from typing import Any, Text, Dict, List
 
-from rasa_sdk import Action, Tracker
-from rasa_sdk.executor import CollectingDispatcher
-from rasa_sdk.events import SlotSet, UserUtteranceReverted
+import datetime
+import os.path
 
-import json
-
+# If modifying these SCOPES, delete the file token.json.
+SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 def write_log(text):
     with open("log.txt", "a") as log:
         log.write(text)
+
+def get_credentials(self) -> Credentials:
+    """Gets valid user credentials from storage."""
+    creds = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+    return creds
 
 class ActionDefaultFallback(Action):
     """Executes the fallback action and goes back to the previous state
@@ -68,23 +95,44 @@ class ActionDefaultFallback(Action):
         return [UserUtteranceReverted()]
     
 class ActionListAllEvents(Action):
-    
+
     def name(self) -> Text:
         return "action_list_all_events"
-    
+
     async def run(
-            self, 
-            dispatcher: CollectingDispatcher, 
-            tracker: Tracker, 
-            domain: Dict[Text, Any]
-        ) -> List[Dict[Text, Any]]:
+        self, 
+        dispatcher: CollectingDispatcher, 
+        tracker: Tracker, 
+        domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+        
+        dispatcher.utter_message("Bilhaaaaaaaaaa")
 
         if tracker.latest_message["intent"].get("confidence") < 0.8:
             dispatcher.utter_message(response="utter_default")
 
-        events_list = None # TODO FAZER A SAUCE :)
+        creds = get_credentials()
+        service = build('calendar', 'v3', credentials=creds)
 
-        dispatcher.utter_message(response="utter_events_listed", events=events_list)
+        # Call the Calendar API
+        now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+        print('Getting the upcoming 10 events')
+        events_result = service.events().list(calendarId='primary', timeMin=now,
+                                              maxResults=10, singleEvents=True,
+                                              orderBy='startTime').execute()
+        events = events_result.get('items', [])
+
+        if not events:
+            dispatcher.utter_message(text="No upcoming events found.")
+        else:
+            # Format the events into a response
+            message = "Here are your upcoming events:"
+            for event in events:
+                start = event['start'].get('dateTime', event['start'].get('date'))
+                message += f"\n- {event['summary']} at {start}"
+            dispatcher.utter_message(text=message)
+
+        return []
 
 class ActionListAllEventsOfADate(Action):
     
@@ -109,27 +157,6 @@ class ActionListAllEventsOfADate(Action):
 
         dispatcher.utter_message(response="utter_confirm_date", day=day, month=month, year=year)
         dispatcher.utter_message(response="utter_events_listed", events=events_list)
-
-# class SwitchLightsAction(Action):
-#     def name(self) -> Text:
-#         return "action_switch_lights"
-   
-#     def run(self, dispatcher: CollectingDispatcher,
-#             tracker: Tracker,
-#             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-       
-#         print(tracker.get_slot("switch") + "--" + tracker.get_slot("place"))   
-#         #tracker.lastest_message["entities"]  [0] - entity - value
-#         print("Confiança: ", tracker.latest_message["intent"].get("confidence"))          
-#         if tracker.latest_message["intent"].get("confidence") < 0.8:
-#             dispatcher.utter_message(response="utter_default")
-#             return [UserUtteranceReverted()]
-#         """
-#         switcher = homecontrol.SwitchLights(lightsimulator)
-#         message = switcher.switchlight(tracker.get_slot("switch"), tracker.get_slot("place"))
-#         dispatcher.utter_message(message)
-#         return [SlotSet("place", None), SlotSet("switch", None)]
-#          """
 
 class ActionAfirmar(Action):
     
@@ -170,4 +197,3 @@ class ActionNegar(Action):
         write_log("Actions: " + "Negar: " + "exit\n")
         
         return []
-    

@@ -1,34 +1,68 @@
 version: "3.1"
 
 rules:
+  - rule: Greet
+    steps:
+      - intent: greet
+      - action: utter_greet
 
-- rule:
-  steps:
-  - intent: greet
-  - action: utter_greet
+  - rule: Goodbye
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
 
-- rule: Goodbye
-  steps:
-  - intent: goodbye
-  - action: utter_goodbye
+  - rule: List All Events
+    steps:
+      - intent: list_all_events
+      - action: action_list_all_events
 
-- rule: list_all_events
-  steps:
-  - intent: list_all_events
-  - action: action_list_all_events
+  - rule: List All Events of a Date
+    steps:
+      - intent: list_all_events_of_a_date
+      - action: action_list_all_events_of_a_date
 
-- rule: list_all_events_of_a_date
-  steps:
-  - intent: list_all_events_of_a_date
-  - action: action_list_all_events_of_a_date
+  - rule: Activate create event form
+    condition:
+      - active_loop: null
+    steps:
+      - intent: create_calendar_event
+      - action: create_event_form
+      - active_loop: create_event_form
 
-# - rule: switchonofflights
-#   steps:
-#   - intent: light_switch
-#   - action: action_switch_lights
+  - rule: Provide Event Title in Form
+    condition:
+      - active_loop: create_event_form
+    steps:
+      - intent: provide_event_title
+      - action: validate_create_event_form
 
-# - rule: Add_reminder to calendar
-#   steps:
-#   - intent: add_reminder
-#   - action: action_create_event
-#   - action: utter_anyelse
+  - rule: Provide Event Date in Form
+    condition:
+      - active_loop: create_event_form
+    steps:
+      - intent: provide_event_date
+      - action: validate_create_event_form
+
+  - rule: Provide Event Time in Form
+    condition:
+      - active_loop: create_event_form
+    steps:
+      - intent: provide_event_time
+      - action: validate_create_event_form
+
+  - rule: Provide Event Color in Form
+    condition:
+      - active_loop: create_event_form
+    steps:
+      - intent: provide_event_color
+      - action: validate_create_event_form
+
+  - rule: Submit create event form
+    condition:
+      - active_loop: create_event_form
+    steps:
+      - action: create_event_form
+      - active_loop: null
+      - slot_was_set:
+          - requested_slot: null
+      - action: submit_create_event_form
