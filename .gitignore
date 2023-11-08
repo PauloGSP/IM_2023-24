@@ -4,6 +4,3 @@
 CAroot.crt
 /code/.rasa
 /code/.vscode
-credentials.json
-token.json
-tests.py

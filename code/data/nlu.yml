@@ -1,5 +1,10 @@
 version: "3.1"
 nlu:
+
+  #
+  # REGEXS
+  #
+
 - regex: day
   examples: |
     - \b(0?[1-9]|[12][0-9]|3[01])\b
@@ -12,6 +17,12 @@ nlu:
   examples: |
     - \b(19|20)\d{2}\b
 
+  #
+  # INTENTS
+  #
+
+  # Greetings
+
 - intent: greet
   examples: |
     - Oi Calendário
@@ -23,6 +34,8 @@ nlu:
     - olá
     - olá calendário
     - olá calendário
+
+  # Goodbye
     
 - intent: goodbye
   examples: |
@@ -30,6 +43,8 @@ nlu:
     - Adeus, Calendário
     - Até logo, Calendário
     - Até amanhã, Calendário
+
+  # Afirmation
 
 - intent: affirm
   examples: |
@@ -41,6 +56,8 @@ nlu:
     - Ok
     - sim
 
+  # Denial
+
 - intent: deny
   examples: |
     - Não
@@ -49,6 +66,8 @@ nlu:
     - Acho que não
     - Não gosto assim
     - Nem por isso
+
+  # List all the events in the callendar
 
 - intent: list_all_events
   examples: |
@@ -61,6 +80,8 @@ nlu:
     - Podes listar todos os eventos?
     - Podes listar todos os eventos, por favor?
 
+  # List all the events of a given day
+
 - intent: list_all_events_of_a_date
   examples: |
     - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year)
@@ -72,7 +93,29 @@ nlu:
     - Podes listar todos os eventos de [10](day) de [Janeiro](month) de [2020](year)?
     - Podes listar todos os eventos de [10](day) de [Janeiro](month) de [2020](year), por favor?
 
-- intent: create_calendar_event
+  # List all the events of a given color tag
+
+- intent: list_all_events_of_a_color_tag
+  examples: |
+    - Lista os eventos com a tag [verde](event_color)
+    - Podes dizer-me os eventos de cor [amarelo](event_color)
+    - Quero todos os eventos com a tag [vermelhor](event_color)
+    - Mostra-me todos eventos tagados a [azul](event_color)
+    - Podes listar os eventos de tag [rosa](event_color)
+
+  # Search/Describe an event given its name
+
+- intent: list_an_event_by_title
+  examples: |
+    - Procura pelo evento [Consulta no Médico](event_title)
+    - Há algum evento de nome [Ir ao Café](event_title)
+    - Encontra o evento [Reunião de Trabalho](event_title)
+    - Quero ver o evento [Encontro de Amigos](event_title)
+
+  # FORMS
+  # Create a new event in the calendar
+
+- intent: create_event
   examples: |
     - Quero criar um novo evento
     - Adicionar um evento ao meu calendário

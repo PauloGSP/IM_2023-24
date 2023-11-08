@@ -7,7 +7,9 @@ intents:
   - deny
   - list_all_events
   - list_all_events_of_a_date
-  - create_calendar_event
+  - list_all_events_of_a_color_tag
+  - list_an_event_by_title
+  - create_event
   - provide_event_title
   - provide_event_date
   - provide_event_time
@@ -65,27 +67,25 @@ responses:
   utter_goodbye:
     - text: Adeus!
     - text: Lembre-se, estou sempre à sua disposição!
-  utter_confirm_date:
-    - text: "Looking up events for {day} {month} {year}."
-  utter_events_listed:
-    - text: "Here are your events: ..."
   utter_default:
     - text: Desculpe, não percebi. Pode repetir?
 
 actions:
   - action_list_all_events
   - action_list_all_events_of_a_date
+  - action_list_all_events_of_a_color_tag
+  - action_list_an_event_by_title
   - validate_create_event_form
   - submit_create_event_form
-  - action_create_calendar_event
+  - action_create_event
 
 forms:
   create_event_form:
     required_slots:
-      - event_title
       - day
       - month
       - year
+      - event_title
       - event_time
       - event_color
 
