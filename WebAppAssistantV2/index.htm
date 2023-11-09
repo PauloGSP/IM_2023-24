@@ -27,29 +27,40 @@
         display: flex;
         flex: 1;
       }
-      .calendar-container, .events-container {
-        flex: 1;
+
+      .calendar-container {
+        flex: 0 0 75%; /* Adjust the percentage to control the width of the calendar */
+        overflow-y: hidden;
+        height: 80vh;
+      }
+
+      .events-container {
+        flex: 1; /* Adjust the flex property for the events container */
         overflow-y: auto;
       }
-      iframe {
-        width: 100%;
-        height: 100%;
-      }
+
       .bottom-section {
         display: flex;
         align-items: center;
         padding: 10px;
         background: #f0f0f0;
+        height: 90px; /* Adjust the height as needed for the bottom section */
       }
+      iframe {
+        width: 100%;
+        height: 100%;
+      }
+  
       .mic-icon {
-        flex: 0 0 50px; /* fixed width */
+        flex: 0 0 30px; /* fixed width */
         margin-right: 10px;
+        align-self: flex-start;
       }
       .intents-container {
         flex: 1;  
         overflow-y: auto;
         border: 1px solid #ccc;
-        height: 150px; /* fixed height */
+        height: 100px; /* fixed height */
       }
       .mic{
         width: 150px;
@@ -59,6 +70,7 @@
         align-items: center;
         justify-content: center;
         width: 100%;
+        height: 100px;
         border-radius: 10px;
         background-color: #f0f0f0;
       }
@@ -69,12 +81,7 @@
         color: #41683a;
       }
 
-      .bottomNav{
-        
-        position: absolute;
-        bottom: 2%;
-        width: 95%;
-      }
+
       .recognized{
         font-size:x-large;
       }
@@ -93,16 +100,17 @@
       <div class="calendar-container">
         <h2>Google Calendar</h2>
         <!-- Google Calendar iframe goes here -->
-        <iframe src="https://calendar.google.com/calendar/embed?src=your_calendar_id&ctz=your_timezone"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=multimodalcalendar%40gmail.com&ctz=Europe%2FLisbon"></iframe>
       </div>
-      <div class="events-container">
+      <div id="events-container" class="events-container">
         <h2>Events List</h2>
         <!-- Events will be dynamically added here -->
+        
       </div>
     </div>
 
     <div class="bottom-section">
-        <div class="mic-icon container" style="border: solid 2px #4F5D73;margin: 2%;"> 
+        <div class="mic-icon container" style="border: solid 2px #4F5D73;"> 
 
           <svg class="mic" id="mic" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve">
@@ -145,19 +153,13 @@
       
       </div>
       <div class="intents-container">
-        <p>Intent: Book a meeting | Confidence: 0.90</p>
+        <div id="response" class ="" style=""></div>
+      <div id="energy"></div>        
         <!-- More recognized intents will appear here -->
       </div>
     </div>
 
-    <div class="bottomNav">
-      <div id="response" class=""  style="">d</div>
-      
-    </div>
 
-  
-
-    <div id="energy"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@latest/dist/svg.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.js"></script>
@@ -445,26 +447,91 @@ InitializeKWS();
     $.post( "http://localhost:5005/model/parse", JSON.stringify(obj), function( data ) {
     console.log(data);
 
- 
-    if(data.intent.name=='change_color'){
-      var shape='' ;
-      var color='' ;
+    if (data.intent.name=='list_all_events'){
+      $.get( "http://localhost:4000/list_all_events/", JSON.stringify(data), function( api_return ) {
+        console.log(api_return);
+        var eventData=api_return;
+        const eventContainer = document.getElementById("events-container");
 
-      for (let i = 0; i < data.entities.length; i++)
-      {
-        if(data.entities[i].entity=='shape')
-    	    shape=data.entities[i].value;
-        if(data.entities[i].entity=='color')
-    	    color=data.entities[i].value;
-      }
-  
-      var message = {'intent':'change_color','shape':shape,'color':color}
-      var messaget = btoa(unescape(encodeURIComponent(final_transcript)));
-      var result = { "recognized" : ["SPEECH", "SPEECHIN", "APP"], "text": messaget, "nlu": message };
-      mmiCli_1.sendToIM(new LifeCycleEvent("SPEECHIN", "IM", "text-1", "ctx-1").
-            doExtensionNotification(new EMMA("text-", "text", "command", 1, 0).
-            setValue(JSON.stringify(result))));
+        // Loop through the events and add them to the container
+        eventData.forEach(event => {
+        // Create a new div element for each event
+        const eventDiv = document.createElement("div");
+        
+        // Set the text content to the event summary
+        eventDiv.textContent = event.summary;
+
+        // Append the event div to the container
+        eventContainer.appendChild(eventDiv);
+    });
+      });
     }
+    if (data.intent.name=='list_all_events_of_a_date'){
+      $.post( "http://localhost:4000/list_all_events_of_a_date/", JSON.stringify(data), function( api_return ) {
+        console.log(api_return);
+      });
+    }
+    if (data.intent.name=='list_all_events_of_a_color_tag'){
+      $.post( "http://localhost:4000/list_all_events_of_a_color_tag/", JSON.stringify(data), function( api_return ) {
+        console.log(api_return);
+      });
+    }
+    if (data.intent.name=='list_an_event_by_title'){
+      $.post( "http://localhost:4000/list_an_event_by_title/", JSON.stringify(data), function( api_return ) {
+        console.log(api_return);
+      });
+    }
+    if (data.intent.name=='create_event'){
+      //abrir modal e tratar da sauce
+    }
+    if (data.intent.name=='provide_event_title'){
+      if (forms_completed) {
+        $.post( "http://localhost:4000/create_event/", JSON.stringify(data), function( api_return ) {
+          console.log(api_return);
+        });
+      }
+    }
+    if (data.intent.name=='provide_event_date'){
+      if (forms_completed) {
+        $.post( "http://localhost:4000/create_event/", JSON.stringify(data), function( api_return ) {
+          console.log(api_return);
+        });
+      }
+    }
+    if (data.intent.name=='provide_event_time'){
+      if (forms_completed) {
+        $.post( "http://localhost:4000/create_event/", JSON.stringify(data), function( api_return ) {
+          console.log(api_return);
+        });
+      }
+    }
+    if (data.intent.name=='provide_event_color'){
+      if (forms_completed) {
+        $.post( "http://localhost:4000/create_event/", JSON.stringify(data), function( api_return ) {
+          console.log(api_return);
+        });
+      }
+    }
+
+    // if(data.intent.name=='change_color'){
+    //   var shape='' ;
+    //   var color='' ;
+
+    //   for (let i = 0; i < data.entities.length; i++)
+    //   {
+    //     if(data.entities[i].entity=='shape')
+    // 	    shape=data.entities[i].value;
+    //     if(data.entities[i].entity=='color')
+    // 	    color=data.entities[i].value;
+    //   }
+  
+    //   var message = {'intent':'change_color','shape':shape,'color':color}
+    //   var messaget = btoa(unescape(encodeURIComponent(final_transcript)));
+    //   var result = { "recognized" : ["SPEECH", "SPEECHIN", "APP"], "text": messaget, "nlu": message };
+    //   mmiCli_1.sendToIM(new LifeCycleEvent("SPEECHIN", "IM", "text-1", "ctx-1").
+    //         doExtensionNotification(new EMMA("text-", "text", "command", 1, 0).
+    //         setValue(JSON.stringify(result))));
+    // }
   });
 
   /*
