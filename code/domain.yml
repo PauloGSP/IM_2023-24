@@ -1,52 +1,93 @@
 version: '3.1'
 
 intents:
-- greet
-- goodbye
-- affirm
-- deny
-- list_all_events
-# - light_switch
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - list_all_events
+  - list_all_events_of_a_date
+  - list_all_events_of_a_color_tag
+  - list_an_event_by_title
+  - create_event
+  - provide_event_title
+  - provide_event_date
+  - provide_event_time
+  - provide_event_color
 
 entities:
   - day
   - month
   - year
-# - switch
+  - event_title
+  - event_time
+  - event_color
 
 slots:
   day:
     type: text
-    influence_conversation: false
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: day
   month:
     type: text
-    influence_conversation: false
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: month
   year:
     type: text
-    influence_conversation: false
-  # switch:
-  #   type: text
-  #   influence_conversation: true
-  #   mappings:
-  #   - type: from_entity
-  #     entity: switch
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: year
+  event_title:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: event_title
+  event_time:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: event_time
+  event_color:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: event_color
 
-responses: # Muitas coisas daqui são pah depois
+responses:
   utter_greet:
-  - text: Olá, como posso ajudar? Pode perguntar caso não saiba as funcionalidades disponíveis.
+    - text: Olá, como posso ajudar? Pode perguntar caso não saiba as funcionalidades disponíveis.
   utter_goodbye:
-  - text: Adeus!
-  - text: Lembre-se, estou sempre à sua disposição!
-  utter_confirm_date:
-    - text: "Looking up events for {day} {month} {year}."
-  utter_events_listed:
-    - text: "Here are your events: ..."
+    - text: Adeus!
+    - text: Lembre-se, estou sempre à sua disposição!
   utter_default:
-  - text: Desculpe, não percebi. Pode repetir?
+    - text: Desculpe, não percebi. Pode repetir?
 
 actions:
-- action_list_all_events
-- actionlist_all_events_of_a_date
+  - action_list_all_events
+  - action_list_all_events_of_a_date
+  - action_list_all_events_of_a_color_tag
+  - action_list_an_event_by_title
+  - validate_create_event_form
+  - submit_create_event_form
+  - action_create_event
+
+forms:
+  create_event_form:
+    required_slots:
+      - day
+      - month
+      - year
+      - event_title
+      - event_time
+      - event_color
 
 session_config:
   session_expiration_time: 60

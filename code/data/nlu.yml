@@ -1,5 +1,10 @@
 version: "3.1"
 nlu:
+
+  #
+  # REGEXS
+  #
+
 - regex: day
   examples: |
     - \b(0?[1-9]|[12][0-9]|3[01])\b
@@ -12,6 +17,12 @@ nlu:
   examples: |
     - \b(19|20)\d{2}\b
 
+  #
+  # INTENTS
+  #
+
+  # Greetings
+
 - intent: greet
   examples: |
     - Oi Calendário
@@ -23,14 +34,17 @@ nlu:
     - olá
     - olá calendário
     - olá calendário
+
+  # Goodbye
     
 - intent: goodbye
   examples: |
     - Xau, Calendário
     - Adeus, Calendário
     - Até logo, Calendário
-    - Boa noite, Calendário
     - Até amanhã, Calendário
+
+  # Afirmation
 
 - intent: affirm
   examples: |
@@ -42,6 +56,8 @@ nlu:
     - Ok
     - sim
 
+  # Denial
+
 - intent: deny
   examples: |
     - Não
@@ -51,46 +67,89 @@ nlu:
     - Não gosto assim
     - Nem por isso
 
-  - intent: list_all_events
-    examples: |
-      - Lista os eventos 
-      - Lista todos os eventos 
-      - Lista os eventos, por favor
-      - Lista todos os eventos, por favor
-      - Podes listar os eventos?
-      - Podes listar os eventos, por favor?
-      - Podes listar todos os eventos?
-      - Podes listar todos os eventos, por favor?
+  # List all the events in the callendar
 
-  - intent: list_all_events_of_a_date
-    examples: |
-      - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year)
-#      - Lista todos os eventos  de [hoje](day)
-#      - Lista os eventos de [hoje](day), por favor
-#      - Lista todos os eventos de [hoje](day), por favor
-#      - Podes listar os eventos de [hoje](day)?
-#      - Podes listar os eventos de [hoje](day), por favor?
-#      - Podes listar todos os eventos de [hoje](day)?
-#      - Podes listar todos os eventos de [hoje](day), por favor?
-#      - Lista os eventos de [amanhã](day)
-#      - Lista todos os eventos de [amanhã](day)
-#      - Lista os eventos de [amanhã](day), por favor
-#      - Lista todos os eventos de [amanhã](day), por favor
-#      - Podes listar os eventos de [amanhã](day)?
-#      - Podes listar os eventos de [amanhã](day), por favor?
-#      - Podes listar todos os eventos de [amanhã](day)?
-#      - Podes listar todos os eventos de [amanhã](day), por favor?
+- intent: list_all_events
+  examples: |
+    - Lista os eventos 
+    - Lista todos os eventos 
+    - Lista os eventos, por favor
+    - Lista todos os eventos, por favor
+    - Podes listar os eventos?
+    - Podes listar os eventos, por favor?
+    - Podes listar todos os eventos?
+    - Podes listar todos os eventos, por favor?
 
-# - intent: light_switch
-#   examples: |
-#     - [Liga](switch) a luz da [sala](place), por favor
-#     - Podes [ligar](switch) a luz da [cozinha](place)?
-#     - Podes [desligar](switch) a luz do [quarto](place)?
-#     - [Acende-me](switch) a luz da [entrada](place)
-#     - [Apaga](switch) a luz do espelho(place)
-#     - Podes [acender](switch) a luz da [casa de banho](place)?
-#     - Podes [apagar](switch) a luz da [dispensa](place)?
-#     - Podes [desligar](switch) a luz do [quarto e da casa de banho](place)?
-#     - [Liga](switch) a luz da [sala](place)
-#     - [Liga](switch) a luz do [quarto](place)
-#     - [Desliga](switch) a luz do [quarto](place)
+  # List all the events of a given day
+
+- intent: list_all_events_of_a_date
+  examples: |
+    - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year)
+    - Lista todos os eventos  de [10](day) de [Janeiro](month) de [2020](year)
+    - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year), por favor
+    - Lista todos os eventos de [10](day) de [Janeiro](month) de [2020](year), por favor
+    - Podes listar os eventos de [10](day) de [Janeiro](month) de [2020](year)?
+    - Podes listar os eventos de [10](day) de [Janeiro](month) de [2020](year), por favor?
+    - Podes listar todos os eventos de [10](day) de [Janeiro](month) de [2020](year)?
+    - Podes listar todos os eventos de [10](day) de [Janeiro](month) de [2020](year), por favor?
+
+  # List all the events of a given color tag
+
+- intent: list_all_events_of_a_color_tag
+  examples: |
+    - Lista os eventos com a tag [verde](event_color)
+    - Podes dizer-me os eventos de cor [amarelo](event_color)
+    - Quero todos os eventos com a tag [vermelhor](event_color)
+    - Mostra-me todos eventos tagados a [azul](event_color)
+    - Podes listar os eventos de tag [rosa](event_color)
+
+  # Search/Describe an event given its name
+
+- intent: list_an_event_by_title
+  examples: |
+    - Procura pelo evento [Consulta no Médico](event_title)
+    - Há algum evento de nome [Ir ao Café](event_title)
+    - Encontra o evento [Reunião de Trabalho](event_title)
+    - Quero ver o evento [Encontro de Amigos](event_title)
+
+  # FORMS
+  # Create a new event in the calendar
+
+- intent: create_event
+  examples: |
+    - Quero criar um novo evento
+    - Adicionar um evento ao meu calendário
+    - Gostaria de marcar um novo compromisso
+    - Vamos marcar um novo evento no calendário
+
+- intent: provide_event_title
+  examples: |
+    - O evento se chama [Consulta no Dentista](event_title)
+    - Nomeie o evento [Reunião do Projeto](event_title)
+    - O título deve ser [Café com o João](event_title)
+    - É [Aula de Ioga](event_title)
+    - Chame de [Almoço da Equipe](event_title)
+
+- intent: provide_event_date
+  examples: |
+    - A data é [10](day) de [Março](month) de [2004](year)
+    - Será no dia [3](day) de [Julho](month) de [2015](year)
+    - Marque para o dia [5](day) de [Junho](month) de [2007](year)
+    - Agende para o dia [20](day) de [Dezembro](month) de [2022](year)
+    - A consulta é no dia [31](day) de [Janeiro](month) de [2020](year)
+    - O evento será no dia [16](day) de [Outubro](month) de [2019](year)
+
+- intent: provide_event_time
+  examples: |
+    - Começa às [10 e 30](event_time)
+    - O horário deve ser [14:30](event_time)
+    - Defina o horário para as [17 horas](event_time)
+    - Preciso que seja às [20 horas](event_time)
+    - Inicie o evento às [7 da manhã](event_time)
+
+- intent: provide_event_color
+  examples: |
+    - Usa a cor [azul](event_color)
+    - Utiliza a cor [vermelho](event_color)
+    - Quero a cor [amarelo](event_color)
+    - Cor [verde](event_color)

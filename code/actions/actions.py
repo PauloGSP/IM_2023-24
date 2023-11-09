@@ -26,14 +26,20 @@
 #
 #         return []
 
+from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from rasa_sdk import Action, Tracker
+from rasa_sdk.events import UserUtteranceReverted
+from rasa_sdk.executor import CollectingDispatcher
 from typing import Any, Text, Dict, List
 
-from rasa_sdk import Action, Tracker
-from rasa_sdk.executor import CollectingDispatcher
-from rasa_sdk.events import SlotSet, UserUtteranceReverted
+import datetime
+import os.path
 
-import json
-
+# If modifying these SCOPES, delete the file token.json.
+SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 def write_log(text):
     with open("log.txt", "a") as log:
@@ -67,69 +73,66 @@ class ActionDefaultFallback(Action):
         # Revert user message which led to fallback.
         return [UserUtteranceReverted()]
     
-class ActionListAllEvents(Action):
-    
-    def name(self) -> Text:
-        return "action_list_all_events"
-    
-    async def run(
-            self, 
-            dispatcher: CollectingDispatcher, 
-            tracker: Tracker, 
-            domain: Dict[Text, Any]
-        ) -> List[Dict[Text, Any]]:
+# class ActionListAllEvents(Action):
 
-        if tracker.latest_message["intent"].get("confidence") < 0.8:
-            dispatcher.utter_message(response="utter_default")
-
-        events_list = None # TODO FAZER A SAUCE :)
-
-        dispatcher.utter_message(response="utter_events_listed", events=events_list)
-
-class ActionListAllEventsOfADate(Action):
-    
-    def name(self) -> Text:
-        return "action_list_all_events_of_a_date"
-    
-    async def run(
-            self, 
-            dispatcher: CollectingDispatcher, 
-            tracker: Tracker, 
-            domain: Dict[Text, Any]
-        ) -> List[Dict[Text, Any]]:
-
-        if tracker.latest_message["intent"].get("confidence") < 0.8:
-            dispatcher.utter_message(response="utter_default")
-
-        day = tracker.get_slot('day')
-        month = tracker.get_slot('month')
-        year = tracker.get_slot('year')
-
-        events_list = None # TODO FAZER A SAUCE :)
-
-        dispatcher.utter_message(response="utter_confirm_date", day=day, month=month, year=year)
-        dispatcher.utter_message(response="utter_events_listed", events=events_list)
-
-# class SwitchLightsAction(Action):
 #     def name(self) -> Text:
-#         return "action_switch_lights"
-   
-#     def run(self, dispatcher: CollectingDispatcher,
-#             tracker: Tracker,
-#             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-       
-#         print(tracker.get_slot("switch") + "--" + tracker.get_slot("place"))   
-#         #tracker.lastest_message["entities"]  [0] - entity - value
-#         print("Confiança: ", tracker.latest_message["intent"].get("confidence"))          
+#         return "action_list_all_events"
+
+#     async def run(
+#         self, 
+#         dispatcher: CollectingDispatcher, 
+#         tracker: Tracker, 
+#         domain: Dict[Text, Any]
+#     ) -> List[Dict[Text, Any]]:
+        
+#         dispatcher.utter_message("Bilhaaaaaaaaaa")
+
 #         if tracker.latest_message["intent"].get("confidence") < 0.8:
 #             dispatcher.utter_message(response="utter_default")
-#             return [UserUtteranceReverted()]
-#         """
-#         switcher = homecontrol.SwitchLights(lightsimulator)
-#         message = switcher.switchlight(tracker.get_slot("switch"), tracker.get_slot("place"))
-#         dispatcher.utter_message(message)
-#         return [SlotSet("place", None), SlotSet("switch", None)]
-#          """
+
+#         creds = get_credentials()
+#         service = build('calendar', 'v3', credentials=creds)
+
+#         # Call the Calendar API
+#         now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+#         print('Getting the upcoming 10 events')
+#         events_result = service.events().list(calendarId='primary', timeMin=now,
+#                                               maxResults=10, singleEvents=True,
+#                                               orderBy='startTime').execute()
+#         events = events_result.get('items', [])
+
+#         if not events:
+#             dispatcher.utter_message(text="No upcoming events found.")
+#         else:
+#             # Format the events into a response
+#             message = "Here are your upcoming events:"
+#             for event in events:
+#                 start = event['start'].get('dateTime', event['start'].get('date'))
+#                 message += f"\n- {event['summary']} at {start}"
+#             dispatcher.utter_message(text=message)
+#        return []
+
+# class ActionListAllEventsOfADate(Action):
+    
+#     def name(self) -> Text:
+#         return "action_list_all_events_of_a_date"
+    
+#     async def run(
+#             self, 
+#             dispatcher: CollectingDispatcher, 
+#             tracker: Tracker, 
+#             domain: Dict[Text, Any]
+#         ) -> List[Dict[Text, Any]]:
+
+#         if tracker.latest_message["intent"].get("confidence") < 0.8:
+#             dispatcher.utter_message(response="utter_default")
+
+#         day = tracker.get_slot('day')
+#         month = tracker.get_slot('month')
+#         year = tracker.get_slot('year')
+
+#         events_list = None # TODO FAZER A SAUCE :)
+
 
 class ActionAfirmar(Action):
     
@@ -170,4 +173,3 @@ class ActionNegar(Action):
         write_log("Actions: " + "Negar: " + "exit\n")
         
         return []
-    
