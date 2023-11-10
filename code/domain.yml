@@ -1,8 +1,6 @@
 version: '3.1'
 
 intents:
-  - greet
-  - goodbye
   - affirm
   - deny
   - list_all_events
@@ -14,6 +12,8 @@ intents:
   - provide_event_date
   - provide_event_time
   - provide_event_color
+  - submit_event
+  - cancel_event
 
 entities:
   - day
@@ -66,18 +66,22 @@ responses:
     - text: Olá, como posso ajudar? Pode perguntar caso não saiba as funcionalidades disponíveis.
   utter_goodbye:
     - text: Adeus!
-    - text: Lembre-se, estou sempre à sua disposição!
   utter_default:
     - text: Desculpe, não percebi. Pode repetir?
 
 actions:
+  - action_default_fallback
   - action_list_all_events
   - action_list_all_events_of_a_date
   - action_list_all_events_of_a_color_tag
   - action_list_an_event_by_title
-  - validate_create_event_form
-  - submit_create_event_form
   - action_create_event
+  - action_provide_event_title
+  - action_provide_event_date
+  - action_provide_event_time
+  - action_provide_event_color
+  - create_submit_event
+  - create_cancel_event
 
 forms:
   create_event_form:

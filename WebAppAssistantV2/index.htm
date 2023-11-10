@@ -10,6 +10,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
     
     <style>
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+      }
       body {
         font-family: 'Poppins', sans-serif;
         margin: 0;
@@ -158,6 +178,22 @@
         <!-- More recognized intents will appear here -->
       </div>
     </div>
+    <div id="event-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="event-form">
+          <label for="title">Title:</label>
+          <input type="text" id="title" name="title" required><br>
+          <label for="date">Date:</label>
+          <input type="date" id="date" name="date" required><br>
+          <label for="time">Time:</label>
+          <input type="time" id="time" name="time" required><br>
+          <label for="color">Color:</label>
+          <input type="color" id="color" name="color" required><br>
+          <input type="submit" value="Create Event">
+        </form>
+      </div>
+    </div>
 
 
 
@@ -178,6 +214,10 @@
 <script type="module">
 
 var isOnKWS=false;
+
+var new_event_title, new_event_color, new_event_time, new_event_date;
+var creating_new_event = false;
+
 const sensor = new MicrophoneSensor();
   let classifyCache = {};
   let allData = [];
@@ -237,7 +277,17 @@ const onSampleComplete = (obj) => {
         classifyResult = classifyCache[cacheKey];
         let noise = classifyResult.results.find(r => r.label === 'noise').value;
         let casa_viva = classifyResult.results.find(r => r.label === 'casa_viva').value;
-
+        document.addEventListener('keydown', function(event) {
+    if (event.key === 'k' || event.key === 'K') 
+    {
+      casa_vivaCount++;
+      if(!isOnKWS){
+              recognition.start();
+              circle.animate(20, 0, 'now').attr({ fill: '#00a431' });
+              transcriptDiv.textContent = "...";
+              isOnKWS=true;
+            }
+    }});
 if(casa_viva>.3)
         console.log(casa_viva);
         if (noise >= 0.6) {
@@ -467,49 +517,124 @@ InitializeKWS();
       });
     }
     if (data.intent.name=='list_all_events_of_a_date'){
-      $.post( "http://localhost:4000/list_all_events_of_a_date/", JSON.stringify(data), function( api_return ) {
+      let day, month, year;
+      for (let i = 0; i < data.entities.length; i++) {
+        if (data.entities[i].entity == 'day'){
+          day = data.entities[i].value;
+        }
+        if (data.entities[i].entity == 'month'){
+          month = data.entities[i].value;
+        }
+        if (data.entities[i].entity == 'year'){
+          year = data.entities[i].value;
+        }
+      }
+      let body = {
+        "day":day,
+        "month":month,
+        "year":year
+      }
+      $.post( "http://localhost:4000/list_all_events_of_a_date/", JSON.stringify(body), function( api_return ) {
         console.log(api_return);
       });
     }
     if (data.intent.name=='list_all_events_of_a_color_tag'){
-      $.post( "http://localhost:4000/list_all_events_of_a_color_tag/", JSON.stringify(data), function( api_return ) {
+      let cor;
+      for (let i = 0; i < data.entities.length; i++) {
+        if (data.entities[i].entity == 'event_cor'){
+          cor = data.entities[i].value;
+        }
+      }
+      let body = {
+        "cor":cor
+      }
+      $.post( "http://localhost:4000/list_all_events_of_a_color_tag/", JSON.stringify(body), function( api_return ) {
         console.log(api_return);
       });
     }
     if (data.intent.name=='list_an_event_by_title'){
-      $.post( "http://localhost:4000/list_an_event_by_title/", JSON.stringify(data), function( api_return ) {
-        console.log(api_return);
-      });
+      let title;
+      for (let i = 0; i < data.entities.length; i++) {
+        if (data.entities[i].entity == 'event_title'){
+          title = data.entities[i].value;
+        }
+      }
+      let body = {
+        "title":title
+      }
+      console.log(body)
+      fetch('http://localhost:4000/list_an_event_by_title/', {
+         method: "POST",
+         headers: {"content-type": "application/json"},
+         body: JSON.stringify(body),
+      }).then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+        })
     }
     if (data.intent.name=='create_event'){
+      creating_new_event = true;
       //abrir modal e tratar da sauce
+      // JavaScript to handle modal opening
+        // Display the modal
+      document.getElementById('event-modal').style.display = 'block';
+      
+
+      // Get the modal
+      var modal = document.getElementById('event-modal');
+
+      // Get the <span> element that closes the modal
+      var span = document.getElementsByClassName("close")[0];
+
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+
+      // Handle form submission
+      document.getElementById('event-form').onsubmit = function(event) {
+        event.preventDefault();
+        // Here you would handle form submission, like sending data to your server
+        modal.style.display = "none";
+      }
+
     }
     if (data.intent.name=='provide_event_title'){
-      if (forms_completed) {
-        $.post( "http://localhost:4000/create_event/", JSON.stringify(data), function( api_return ) {
-          console.log(api_return);
-        });
+      if (creating_new_event) {
+        
       }
     }
     if (data.intent.name=='provide_event_date'){
-      if (forms_completed) {
-        $.post( "http://localhost:4000/create_event/", JSON.stringify(data), function( api_return ) {
-          console.log(api_return);
-        });
+      if (creating_new_event) {
+        
       }
     }
     if (data.intent.name=='provide_event_time'){
-      if (forms_completed) {
-        $.post( "http://localhost:4000/create_event/", JSON.stringify(data), function( api_return ) {
-          console.log(api_return);
-        });
+      if (creating_new_event) {
       }
     }
     if (data.intent.name=='provide_event_color'){
-      if (forms_completed) {
-        $.post( "http://localhost:4000/create_event/", JSON.stringify(data), function( api_return ) {
-          console.log(api_return);
-        });
+      if (creating_new_event) {
+        
+      }
+    }
+    if (data.intent.name=='submit_event'){
+      if (creating_new_event) {
+        creating_new_event = false;
+      }
+    }
+    if (data.intent.name=='cancel_evento'){
+      if (creating_new_event) {
+        var modal = document.getElementById('event-modal');
+        modal.style.display = "none";
+        creating_new_event=false;
       }
     }
 

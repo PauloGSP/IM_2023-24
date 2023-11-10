@@ -59,35 +59,45 @@ rules:
       - active_loop: create_event_form
     steps:
       - intent: provide_event_title
-      - action: validate_create_event_form
+      - action: action_provide_event_title
 
   - rule: Provide Event Date in Form
     condition:
       - active_loop: create_event_form
     steps:
       - intent: provide_event_date
-      - action: validate_create_event_form
+      - action: action_provide_event_date
 
   - rule: Provide Event Time in Form
     condition:
       - active_loop: create_event_form
     steps:
       - intent: provide_event_time
-      - action: validate_create_event_form
+      - action: action_provide_event_time
 
   - rule: Provide Event Color in Form
     condition:
       - active_loop: create_event_form
     steps:
       - intent: provide_event_color
-      - action: validate_create_event_form
+      - action: action_provide_event_color
 
-  - rule: Submit create event form
+  - rule: Submit event form
     condition:
       - active_loop: create_event_form
     steps:
-      - action: create_event_form
+      - intent: submit_event
+      - action: create_submit_event
       - active_loop: null
       - slot_was_set:
           - requested_slot: null
-      - action: submit_create_event_form
+
+  - rule: Cancel the creation of event form
+    condition:
+      - active_loop: create_event_form
+    steps:
+      - intent: cancel_event
+      - action: create_cancel_event
+      - active_loop: null
+      - slot_was_set:
+          - requested_slot: null

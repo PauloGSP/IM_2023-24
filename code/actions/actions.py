@@ -26,38 +26,20 @@
 #
 #         return []
 
-from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
 from rasa_sdk import Action, Tracker
 from rasa_sdk.events import UserUtteranceReverted
 from rasa_sdk.executor import CollectingDispatcher
 from typing import Any, Text, Dict, List
-
-import datetime
-import os.path
-
-# If modifying these SCOPES, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 def write_log(text):
     with open("log.txt", "a") as log:
         log.write(text)
 
 class ActionDefaultFallback(Action):
-    """Executes the fallback action and goes back to the previous state
-    of the dialogue"""
-
     def name(self) -> Text:
         return "action_default_fallback"
 
-    async def run(
-        self,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> List[Dict[Text, Any]]:
+    async def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         write_log("Actions: " + "No_understand: " + "enter\n")
         
         print("Confiança: ", tracker.latest_message["intent"].get("confidence"))
@@ -66,89 +48,22 @@ class ActionDefaultFallback(Action):
         if tracker.latest_message["intent"].get("confidence") > 0.5:
             dispatcher.utter_message(response="utter_default")
         
-        #publish.single(topic="comandos/voz/UI", payload=json.dumps({"comando": "no_understand"}), hostname="localhost")
-        
         write_log("Actions: " + "No_understand: " + "exit\n")
         
-        # Revert user message which led to fallback.
         return [UserUtteranceReverted()]
     
-# class ActionListAllEvents(Action):
-
-#     def name(self) -> Text:
-#         return "action_list_all_events"
-
-#     async def run(
-#         self, 
-#         dispatcher: CollectingDispatcher, 
-#         tracker: Tracker, 
-#         domain: Dict[Text, Any]
-#     ) -> List[Dict[Text, Any]]:
-        
-#         dispatcher.utter_message("Bilhaaaaaaaaaa")
-
-#         if tracker.latest_message["intent"].get("confidence") < 0.8:
-#             dispatcher.utter_message(response="utter_default")
-
-#         creds = get_credentials()
-#         service = build('calendar', 'v3', credentials=creds)
-
-#         # Call the Calendar API
-#         now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-#         print('Getting the upcoming 10 events')
-#         events_result = service.events().list(calendarId='primary', timeMin=now,
-#                                               maxResults=10, singleEvents=True,
-#                                               orderBy='startTime').execute()
-#         events = events_result.get('items', [])
-
-#         if not events:
-#             dispatcher.utter_message(text="No upcoming events found.")
-#         else:
-#             # Format the events into a response
-#             message = "Here are your upcoming events:"
-#             for event in events:
-#                 start = event['start'].get('dateTime', event['start'].get('date'))
-#                 message += f"\n- {event['summary']} at {start}"
-#             dispatcher.utter_message(text=message)
-#        return []
-
-# class ActionListAllEventsOfADate(Action):
-    
-#     def name(self) -> Text:
-#         return "action_list_all_events_of_a_date"
-    
-#     async def run(
-#             self, 
-#             dispatcher: CollectingDispatcher, 
-#             tracker: Tracker, 
-#             domain: Dict[Text, Any]
-#         ) -> List[Dict[Text, Any]]:
-
-#         if tracker.latest_message["intent"].get("confidence") < 0.8:
-#             dispatcher.utter_message(response="utter_default")
-
-#         day = tracker.get_slot('day')
-#         month = tracker.get_slot('month')
-#         year = tracker.get_slot('year')
-
-#         events_list = None # TODO FAZER A SAUCE :)
-
 
 class ActionAfirmar(Action):
     
     def name(self) -> Text:
         return "action_afirmar"
     
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
         write_log("Actions: " + "Afirmar: " + "enter\n")
         print("Confiança: ", tracker.latest_message["intent"].get("confidence"))
         write_log("Confiança: " + str(tracker.latest_message["intent"].get("confidence")) + "\n")
         
-        msg = {"comando": "confirmar"}
-        # publish.single(topic="comandos/voz/UI", payload=json.dumps(msg), hostname="localhost")
         
         write_log("Actions: " + "Afirmar: " + "exit\n")
         
@@ -168,7 +83,6 @@ class ActionNegar(Action):
         write_log("Confiança: " + str(tracker.latest_message["intent"].get("confidence")) + "\n")
         
         msg = {"comando": "negar"}
-        # publish.single(topic="comandos/voz/UI", payload=json.dumps(msg), hostname="localhost")
         
         write_log("Actions: " + "Negar: " + "exit\n")
         

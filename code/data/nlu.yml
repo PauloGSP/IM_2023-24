@@ -12,7 +12,7 @@ nlu:
 - regex: month
   examples: |
     - \b(Janeiro|Fevereiro|Março|Abril|Maio|Junho|Julho|Agosto|Setembro|Outubro|Novembro|Dezembro)\b
-
+    - \b(1-31)\b
 - regex: year
   examples: |
     - \b(19|20)\d{2}\b
@@ -85,13 +85,13 @@ nlu:
 - intent: list_all_events_of_a_date
   examples: |
     - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year)
-    - Lista todos os eventos  de [10](day) de [Janeiro](month) de [2020](year)
-    - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year), por favor
-    - Lista todos os eventos de [10](day) de [Janeiro](month) de [2020](year), por favor
-    - Podes listar os eventos de [10](day) de [Janeiro](month) de [2020](year)?
-    - Podes listar os eventos de [10](day) de [Janeiro](month) de [2020](year), por favor?
-    - Podes listar todos os eventos de [10](day) de [Janeiro](month) de [2020](year)?
-    - Podes listar todos os eventos de [10](day) de [Janeiro](month) de [2020](year), por favor?
+    - Lista todos os eventos de [7](day) do [10](month) de [2005](year)
+    - Lista os eventos de [20](day) de [Outubro](month) de [2023](year), por favor
+    - Lista todos os eventos de [25](day) de [Abril](month) de [1973](year), por favor
+    - Podes listar os eventos de [1](day) do [1](month) de [2021](year)?
+    - Podes listar os eventos de [17](day) de [Fevereiro](month) de [2000](year), por favor?
+    - Podes listar todos os eventos de [11](day) do [8](month) de [2001](year)?
+    - Podes listar todos os eventos de [31](day) de [Dezembro](month) de [2010](year), por favor?
 
   # List all the events of a given color tag
 
@@ -108,9 +108,12 @@ nlu:
 - intent: list_an_event_by_title
   examples: |
     - Procura pelo evento [Consulta no Médico](event_title)
+    - Procura pelo evento [Google](event_title)
     - Há algum evento de nome [Ir ao Café](event_title)
     - Encontra o evento [Reunião de Trabalho](event_title)
+    - Encontra o evento [Trabalho](event_title)
     - Quero ver o evento [Encontro de Amigos](event_title)
+    - Quero ver o evento [Amigos](event_title)
 
   # FORMS
   # Create a new event in the calendar
@@ -153,3 +156,19 @@ nlu:
     - Utiliza a cor [vermelho](event_color)
     - Quero a cor [amarelo](event_color)
     - Cor [verde](event_color)
+
+- intent: submit_event
+  examples: |
+    - Submete o evento
+    - Adicionar o evento
+    - Criar o evento
+    - Feito
+    - Evento conluído
+
+- intent: cancel_event
+  examples: |
+    - Cancela o evento
+    - Voltar para o calendário
+    - Cancelar
+    - Voltar
+    - Sair
