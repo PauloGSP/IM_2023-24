@@ -534,9 +534,14 @@ InitializeKWS();
         "month":month,
         "year":year
       }
-      $.post( "http://localhost:4000/list_all_events_of_a_date/", JSON.stringify(body), function( api_return ) {
-        console.log(api_return);
-      });
+      fetch('http://localhost:4000/list_all_events_of_a_date/', {
+         method: "POST",
+         headers: {"content-type": "application/json"},
+         body: JSON.stringify(body),
+      }).then(response => response.json())
+        .then(api_return => {
+          console.log(api_return);
+        })
     }
     if (data.intent.name=='list_all_events_of_a_color_tag'){
       let cor;
@@ -548,9 +553,14 @@ InitializeKWS();
       let body = {
         "cor":cor
       }
-      $.post( "http://localhost:4000/list_all_events_of_a_color_tag/", JSON.stringify(body), function( api_return ) {
-        console.log(api_return);
-      });
+      fetch('http://localhost:4000/list_all_events_of_a_color_tag/', {
+         method: "POST",
+         headers: {"content-type": "application/json"},
+         body: JSON.stringify(body),
+      }).then(response => response.json())
+        .then(api_return => {
+          console.log(api_return);
+        })
     }
     if (data.intent.name=='list_an_event_by_title'){
       let title;
@@ -568,8 +578,8 @@ InitializeKWS();
          headers: {"content-type": "application/json"},
          body: JSON.stringify(body),
       }).then(response => response.json())
-        .then(data => {
-          console.log('Success:', data);
+        .then(api_return => {
+          console.log(api_return);
         })
     }
     if (data.intent.name=='create_event'){

@@ -208,7 +208,7 @@ async def list_an_event_by_title(title: Title):
         event_by_title = []
 
         for e in events:
-            if title.title in e["summary"]:
+            if title.title.lower() in e["summary"].lower():
                 event_by_title.append(e)
         return event_by_title
 
