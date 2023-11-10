@@ -117,7 +117,34 @@ async def list_all_events_of_a_date(date: Date):
 
         event_of_date = []
 
-        dateIsoFormat = f"{date.year}-{date.month}-{date.day}"
+        month = date.month.lower()
+        if not month.isnumeric():
+            if month == "janeiro":
+                month = "1"
+            if month == "fevereiro":
+                month = "2"
+            if month == "março":
+                month = "3"
+            if month == "abril":
+                month = "4"
+            if month == "maio":
+                month = "5"
+            if month == "junho":
+                month = "6"
+            if month == "julho":
+                month = "6"
+            if month == "agosto":
+                month = "8"
+            if month == "setetembro":
+                month = "9"
+            if month == "outubro":
+                month = "10"
+            if month == "novembro":
+                month = "11"
+            if month == "dezembro":
+                month = "12"
+
+        dateIsoFormat = f"{date.year}-{month}-{date.day}"
 
         for e in events:
             print(e["start"])
