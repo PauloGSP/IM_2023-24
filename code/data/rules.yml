@@ -15,89 +15,89 @@ rules:
       - intent: goodbye
       - action: utter_goodbye
 
-  # List all the events in the callendar
+  # # List all the events in the callendar
 
-  - rule: List All Events
-    steps:
-      - intent: list_all_events
-      - action: action_list_all_events
+  # - rule: List All Events
+  #   steps:
+  #     - intent: list_all_events
+  #     - action: action_list_all_events
 
-  # List all the events of a given day
+  # # List all the events of a given day
 
-  - rule: List All Events of a Date
-    steps:
-      - intent: list_all_events_of_a_date
-      - action: action_list_all_events_of_a_date
+  # - rule: List All Events of a Date
+  #   steps:
+  #     - intent: list_all_events_of_a_date
+  #     - action: action_list_all_events_of_a_date
 
-  # List all the events of a given color tag
+  # # List all the events of a given color tag
 
-  - rule: List All Events of a Color Tag
-    steps:
-      - intent: list_all_events_of_a_color_tag
-      - action: action_list_all_events_of_a_color_tag
+  # - rule: List All Events of a Color Tag
+  #   steps:
+  #     - intent: list_all_events_of_a_color_tag
+  #     - action: action_list_all_events_of_a_color_tag
 
-  # Search/Describe an event given its name
+  # # Search/Describe an event given its name
 
-  - rule: List An Event by Title
-    steps:
-      - intent: list_an_event_by_title
-      - action: action_list_an_event_by_title
+  # - rule: List An Event by Title
+  #   steps:
+  #     - intent: list_an_event_by_title
+  #     - action: action_list_an_event_by_title
 
-  # FORMS
-  # Create a new event in the calendar
+  # # FORMS
+  # # Create a new event in the calendar
 
-  - rule: Activate create event form
-    condition:
-      - active_loop: null
-    steps:
-      - intent: create_event
-      - action: action_create_event
-      - active_loop: create_event_form
+  # - rule: Activate create event form
+  #   condition:
+  #     - active_loop: null
+  #   steps:
+  #     - intent: create_event
+  #     - action: action_create_event
+  #     - active_loop: create_event_form
 
-  - rule: Provide Event Title in Form
-    condition:
-      - active_loop: create_event_form
-    steps:
-      - intent: provide_event_title
-      - action: action_provide_event_title
+  # - rule: Provide Event Title in Form
+  #   condition:
+  #     - active_loop: create_event_form
+  #   steps:
+  #     - intent: provide_title
+  #     - action: action_provide_title
 
-  - rule: Provide Event Date in Form
-    condition:
-      - active_loop: create_event_form
-    steps:
-      - intent: provide_event_date
-      - action: action_provide_event_date
+  # - rule: Provide Event Date in Form
+  #   condition:
+  #     - active_loop: create_event_form
+  #   steps:
+  #     - intent: provide_event_date
+  #     - action: action_provide_event_date
 
-  - rule: Provide Event Time in Form
-    condition:
-      - active_loop: create_event_form
-    steps:
-      - intent: provide_event_time
-      - action: action_provide_event_time
+  # - rule: Provide Event Time in Form
+  #   condition:
+  #     - active_loop: create_event_form
+  #   steps:
+  #     - intent: provide_time
+  #     - action: action_provide_time
 
-  - rule: Provide Event Color in Form
-    condition:
-      - active_loop: create_event_form
-    steps:
-      - intent: provide_event_color
-      - action: action_provide_event_color
+  # - rule: Provide Event Color in Form
+  #   condition:
+  #     - active_loop: create_event_form
+  #   steps:
+  #     - intent: provide_color_tag
+  #     - action: action_provide_color_tag
 
-  - rule: Submit event form
-    condition:
-      - active_loop: create_event_form
-    steps:
-      - intent: submit_event
-      - action: create_submit_event
-      - active_loop: null
-      - slot_was_set:
-          - requested_slot: null
+  # - rule: Submit event form
+  #   condition:
+  #     - active_loop: create_event_form
+  #   steps:
+  #     - intent: submit_event
+  #     - action: create_submit_event
+  #     - active_loop: null
+  #     - slot_was_set:
+  #         - requested_slot: null
 
-  - rule: Cancel the creation of event form
-    condition:
-      - active_loop: create_event_form
-    steps:
-      - intent: cancel_event
-      - action: create_cancel_event
-      - active_loop: null
-      - slot_was_set:
-          - requested_slot: null
+  # - rule: Cancel the creation of event form
+  #   condition:
+  #     - active_loop: create_event_form
+  #   steps:
+  #     - intent: cancel_event
+  #     - action: create_cancel_event
+  #     - active_loop: null
+  #     - slot_was_set:
+  #         - requested_slot: null

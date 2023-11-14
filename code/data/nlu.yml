@@ -71,51 +71,62 @@ nlu:
 
 - intent: list_all_events
   examples: |
-    - Lista os eventos 
-    - Lista todos os eventos 
-    - Lista os eventos, por favor
-    - Lista todos os eventos, por favor
-    - Podes listar os eventos?
-    - Podes listar os eventos, por favor?
-    - Podes listar todos os eventos?
+    - Lista os eventos.
+    - Lista todos os eventos.
+    - Lista os eventos, por favor.
     - Podes listar todos os eventos, por favor?
+    - Que eventos tenho?
+    - Preciso de saber os meus eventos.
+    - Quero saber os meus eventos.
+
+  # List all the events of a given day
+
+- intent: list_all_events_of_a_day
+  examples: |
+    - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year).
+    - Que eventos tenho marcados para [7](day) do [10](month) de [2005](year)?
+    - Quais são os meus eventos de [25](day) de [Abril](month) de [1973](year)?
+    - Lista os eventos de [1](day) do [1](month) de [2021](year)?
+    - Diz me os eventos do dia [17](day) de [Fevereiro](month) de [2000](year).
+    - Podes listar todos os eventos de [11](day) do [8](month) de [2001](year)?
+    - Quero saber os eventos de dia [31](day) de [Dezembro](month) de [2010](year).
 
   # List all the events of a given day
 
 - intent: list_all_events_of_a_date
   examples: |
-    - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year)
-    - Lista todos os eventos de [7](day) do [10](month) de [2005](year)
-    - Lista os eventos de [20](day) de [Outubro](month) de [2023](year), por favor
-    - Lista todos os eventos de [25](day) de [Abril](month) de [1973](year), por favor
-    - Podes listar os eventos de [1](day) do [1](month) de [2021](year)?
-    - Podes listar os eventos de [17](day) de [Fevereiro](month) de [2000](year), por favor?
-    - Podes listar todos os eventos de [11](day) do [8](month) de [2001](year)?
-    - Podes listar todos os eventos de [31](day) de [Dezembro](month) de [2010](year), por favor?
+    - Lista os eventos de [amanhã](date).
+    - Que eventos tenho marcados para [hoje](date)?
+    - Quais são os meus eventos de [a próxima semana](date)?
+    - Lista os eventos [deste mês](date)?
+    - Diz me os eventos do [próximo mês](date).
+    - Podes listar todos os eventos [deste ano](date)?
+    - Quero saber os eventos [desta semana](date).
 
   # List all the events of a given color tag
 
 - intent: list_all_events_of_a_color_tag
   examples: |
-    - Lista os eventos com a tag [verde](event_color)
-    - Podes dizer-me os eventos de cor [amarelo](event_color)
-    - Quero todos os eventos com a tag [vermelhor](event_color)
-    - Mostra-me todos eventos tagados a [azul](event_color)
-    - Podes listar os eventos de tag [rosa](event_color)
+    - Lista os eventos com a tag [lavanda](color_tag).
+    - Mostra-me todos os eventos assoaciados à cor [banana](color_tag).
+    - Quero todos os eventos com a tag [mirtilo](color_tag).
+    - Que eventos têm a tag [manjericão](color_tag)?
+    - Quais sãos os eventos agrupados a [vapão](color_tag)
+    - Podes listar os eventos de tag [tomate](color_tag)?
 
   # Search/Describe an event given its name
 
 - intent: list_an_event_by_title
   examples: |
-    - Procura pelo evento [Consulta no Médico](event_title)
-    - Procura pelo evento [Google](event_title)
-    - Há algum evento de nome [Ir ao Café](event_title)
-    - Encontra o evento [Reunião de Trabalho](event_title)
-    - Encontra o evento [Trabalho](event_title)
-    - Quero ver o evento [Encontro de Amigos](event_title)
-    - Quero ver o evento [Amigos](event_title)
+    - Procura pelo evento [consulta no médico](title)
+    - Procura pelo evento com o título [conferência google](title)
+    - Há algum evento de nome [ir ao café](title)
+    - Encontra o evento [reunião de trabalho](title)
+    - Encontra o evento de título [trabalho](title)
+    - Quero ver o evento [encontro de amigos](title)
+    - Quero que me dês o evento chamado [entrega do trabalho](title)
 
-  # FORMS
+  # # FORMS
   # Create a new event in the calendar
 
 - intent: create_event
@@ -125,37 +136,51 @@ nlu:
     - Gostaria de marcar um novo compromisso
     - Vamos marcar um novo evento no calendário
 
-- intent: provide_event_title
+- intent: update_event
   examples: |
-    - O evento se chama [Consulta no Dentista](event_title)
-    - Nomeie o evento [Reunião do Projeto](event_title)
-    - O título deve ser [Café com o João](event_title)
-    - É [Aula de Ioga](event_title)
-    - Chame de [Almoço da Equipe](event_title)
+    - Preciso de mudar um evento um novo evento
+    - Adicionar um evento ao meu calendário
+    - Gostaria de marcar um novo compromisso
+    - Vamos marcar um novo evento no calendário
 
-- intent: provide_event_date
+- intent: provide_title
   examples: |
-    - A data é [10](day) de [Março](month) de [2004](year)
-    - Será no dia [3](day) de [Julho](month) de [2015](year)
-    - Marque para o dia [5](day) de [Junho](month) de [2007](year)
-    - Agende para o dia [20](day) de [Dezembro](month) de [2022](year)
-    - A consulta é no dia [31](day) de [Janeiro](month) de [2020](year)
-    - O evento será no dia [16](day) de [Outubro](month) de [2019](year)
+    - Mete no título [Consulta no Dentista](title)
+    - Nomeia o evento de [Reunião do Projeto](title)
+    - O título deve ser [Café com o João](title)
+    - Chama o evento de [Aula de Ioga](title)
 
-- intent: provide_event_time
+- intent: provide_event_day
   examples: |
-    - Começa às [10 e 30](event_time)
-    - O horário deve ser [14:30](event_time)
-    - Defina o horário para as [17 horas](event_time)
-    - Preciso que seja às [20 horas](event_time)
-    - Inicie o evento às [7 da manhã](event_time)
+    - Mete a data de dia [13](day) de [Fevereiro](month) de [2023](year)
+    - Quero que marques para o dia [3](day) de [Julho](month) de [2025](year)
+    - Marca o evento para o dia [5](day) de [Junho](month) de [2040](year)
+    - Agenda para o dia [20](day) de [Dezembro](month) de [2080](year)
+    - O evento será no dia [16](day) de [Outubro](month) de [2050](year)
 
-- intent: provide_event_color
+- intent: provide_event_data
   examples: |
-    - Usa a cor [azul](event_color)
-    - Utiliza a cor [vermelho](event_color)
-    - Quero a cor [amarelo](event_color)
-    - Cor [verde](event_color)
+    - Mete a data de [hoje](date)
+    - Será [daqui a 3 dias](date)
+    - Marca o evento para [amanhã](date)
+    - Agende para o [próximo sábado](date)
+    - A consulta é na [próxima semana](date)
+    - O evento será [daqui a um mês](date)
+
+- intent: provide_time
+  examples: |
+    - Começa às [10 e 30](time)
+    - O horário deve ser [14:30](time)
+    - Defina o horário para as [17 horas](time)
+    - Preciso que seja às [20 horas](time)
+    - Inicie o evento às [7 da manhã](time)
+
+- intent: provide_color_tag
+  examples: |
+    - Usa a cor [azul](color_tag)
+    - Utiliza a cor [vermelho](color_tag)
+    - Quero a cor [amarelo](color_tag)
+    - Cor [verde](color_tag)
 
 - intent: submit_event
   examples: |

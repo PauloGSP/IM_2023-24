@@ -29,9 +29,9 @@ class CreateEvent(BaseModel):
     day: str
     month: str
     year: str
-    event_title: str
-    event_time: str
-    event_color: str
+    title: str
+    time: str
+    color_tag: str
     event_description: str
 
 class Date(BaseModel):
@@ -251,10 +251,10 @@ async def create_event(event: CreateEvent):
         service = build("calendar", "v3", credentials=creds)
 
         new_event = {
-            'summary': event.event_title,
+            'summary': event.title,
             'description': event.event_description,
             'start': {
-                'dateTime': f'{event.year}-{event.month}-{event.day}T{event.event_time}:00Z',
+                'dateTime': f'{event.year}-{event.month}-{event.day}T{event.time}:00Z',
                 'timeZone': 'Europe/Lisbon'
             },
             'reminders': {
