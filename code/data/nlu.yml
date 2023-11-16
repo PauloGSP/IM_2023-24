@@ -158,7 +158,7 @@ nlu:
     - Agenda para o dia [20](day) de [Dezembro](month) de [2080](year)
     - O evento será no dia [16](day) de [Outubro](month) de [2050](year)
 
-- intent: provide_event_data
+- intent: provide_event_date
   examples: |
     - Mete a data de [hoje](date)
     - Será [daqui a 3 dias](date)
