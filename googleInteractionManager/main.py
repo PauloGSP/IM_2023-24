@@ -29,7 +29,7 @@ def detectDay(inputStr : str):
     inputStrSplit = inputStr.lower().split(" ")
 
     number_mapping = {
-        'um': "1", 'uma': "1",'dois': "2", 'duas': "2", 'três': "3", 'quatro': "4",
+        'um': "1", 'uma': "1",'dois': "2", 'duas': "2", 'três': "3", 'tres': "3", 'quatro': "4",
         'cinco': "5", 'seis': "6", 'sete': "7", 'oito': "8", 'nove': "9",
         'dez': "10", 'onze': "11", 'doze': "12", 'treze': "13", 'quatorze': "14",
         'quinze': "15", 'dezesseis': "16", 'dezessete': "17", 'dezoito': "18", 'dezenove': "19",
@@ -42,7 +42,7 @@ def detectDay(inputStr : str):
 
     if "hoje" in inputStrSplit:
         return ["current",0,0,0,0]
-    if "amanhã" in inputStrSplit:
+    if "amanhã" in inputStrSplit or "amanha" in inputStrSplit:
         return ["current",1,0,0,0]
     if "ontem" in inputStrSplit:
         return ["current",-1,0,0,0]
@@ -59,7 +59,7 @@ def detectDay(inputStr : str):
         if "daqui" in term:
             value = "fromto"
 
-        if "próxim" in term :
+        if "próxim" in term or "proxim" in term:
             value = "next"
 
         if value != None:
@@ -76,13 +76,13 @@ def detectDay(inputStr : str):
                     if new_term == "semana" or new_term == "semanas":
                         if number==1: number=2
                         return [value,0,number-1,0,0]
-                    if new_term == "mês" or new_term == "meses":
+                    if new_term == "mês" or new_term == "meses" or new_term == "mes":
                         if number==1: number=2
                         return [value,0,0,number-1,0]
                     if new_term == "ano" or new_term == "anos":
                         if number==1: number=2
                         return [value,0,0,0,number-1]
-            except: pass
+            except: raise
 
     return None, None, None, None, None
 
@@ -200,6 +200,8 @@ async def list_all_events_of_a_day(date: dict):
 
 @app.post("/list_all_events_of_a_date/")
 async def list_all_events_of_a_date(date: dict):
+
+    print(date["date"])
 
     code, days, weeks, months, years = detectDay(date["date"])
     print(code, days, weeks, months, years)
@@ -370,21 +372,61 @@ async def list_an_event_by_title(title: dict):
 async def create_event(event: dict):
     
     creds = getCredentials()
-
+    color_path = {
+            "tomate": "11",
+            "tangerina": "6",
+            "salva": "2",
+            "lavanda": "1",
+            "grafite": "8",
+            "flamingo": "4",
+            "banana": "5",
+            "manjericão": "10",
+            "mirtilo": "9",
+            "uva": "3",
+            "pavão": None
+        }
+    
+    if event["cor"] in color_path:
+        event["cor"] = color_path[event["cor"]]
+    else:
+        event["cor"] = ""
+    
     try:
         service = build("calendar", "v3", credentials=creds)
 
-        new_event = {
-            'summary': event["title"],
-            'description': event["event_description"],
-            'start': {
-                'dateTime': f'{event["year"]}-{event["month"]}-{event["day"]}T{event["time"]}:00Z',
-                'timeZone': 'Europe/Lisbon'
-            },
-            'reminders': {
-                'useDefault': True
+        if event["cor"] != "":
+            new_event = {
+                'summary': event["title"],
+                'description': "",
+                'start': {
+                    'dateTime': f'{event["year"]}-{event["month"]}-{event["day"]}T{event["time"]}:00Z',
+                    'timeZone': 'Europe/Lisbon'
+                },
+                'end': {
+                    'dateTime': f'{event["year"]}-{event["month"]}-{event["day"]}T23:59:00Z',
+                    'timeZone': 'Europe/Lisbon',
+                },
+                'reminders': {
+                    'useDefault': True
+                },
+                'colorId': event["cor"]
             }
-        }
+        else:
+            new_event = {
+                'summary': event["title"],
+                'description': "",
+                'start': {
+                    'dateTime': f'{event["year"]}-{event["month"]}-{event["day"]}T{event["time"]}:00Z',
+                    'timeZone': 'Europe/Lisbon'
+                },
+                'end': {
+                    'dateTime': f'{event["year"]}-{event["month"]}-{event["day"]}T23:59:00Z',
+                    'timeZone': 'Europe/Lisbon',
+                },
+                'reminders': {
+                    'useDefault': True
+                }
+            }
 
         event = service.events().insert(calendarId='primary', body=new_event).execute()
         return event
@@ -417,7 +459,7 @@ async def provide_day(date: dict):
     if len(values)==3:
         if not values[1].isnumeric():
             values[1] = alphaMonths.index(values[1])+1
-        dateIsoFormat = f"{values[2]}-{values[1]}-{values[0]}"
+        dateIsoFormat = f"{values[2]}/{values[1]}/{values[0]}"
         print(dateIsoFormat)
 
 @app.post("/provide_event_date/")
@@ -432,4 +474,4 @@ async def provide_date(date: dict):
     for _ in range(years):
         result_day = (result_day + timedelta(days=365)).replace(day=result_day.day, month=result_day.month)
 
-    return result_day
+    return str(result_day)[0:10]

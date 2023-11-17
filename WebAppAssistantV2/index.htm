@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>CASA VIVA + Assistant</title>
+    <title>Assistente de Calendário</title>
 
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -80,7 +80,7 @@
         flex: 1;  
         overflow-y: auto;
         border: 1px solid #ccc;
-        height: 100px; /* fixed height */
+        height: 200px; /* fixed height */
       }
       .mic{
         width: 150px;
@@ -108,7 +108,7 @@
     </style>
   </head>
   <body>
-    <h1 style="background-color: #4F5D73; margin: 0;">CASA VIVA + Assistant</h1>
+    <h1 style="background-color: #4F5D73; margin: 0;">Assistente de Calendário</h1>
    <!-- <p>Click the button below and start speaking.</p>
     <button id="start-btn">Start</button>
     -->
@@ -117,16 +117,11 @@
 
 
         <div class="top-section">
-      <div class="calendar-container">
-        <h2>Google Calendar</h2>
-        <!-- Google Calendar iframe goes here -->
-        <iframe src="https://calendar.google.com/calendar/embed?src=multimodalcalendar%40gmail.com&ctz=Europe%2FLisbon"></iframe>
-      </div>
-      <div id="events-container" class="events-container">
-        <h2>Events List</h2>
-        <!-- Events will be dynamically added here -->
-        
-      </div>
+          <div class="intents-container">
+            <div id="response" class ="" style=""></div>
+          <div id="energy"></div>        
+            <!-- More recognized intents will appear here -->
+          </div>
     </div>
 
     <div class="bottom-section">
@@ -172,28 +167,9 @@
             <div class="recognized" style="display: inline; vertical-align: center; top: auto;bottom: auto; width: 600px;" id="transcript"></div>
       
       </div>
-      <div class="intents-container">
-        <div id="response" class ="" style=""></div>
-      <div id="energy"></div>        
-        <!-- More recognized intents will appear here -->
-      </div>
+      
     </div>
-    <div id="event-modal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <form id="event-form">
-          <label for="title">Title:</label>
-          <input type="text" id="title" name="title" required><br>
-          <label for="date">Date:</label>
-          <input type="date" id="date" name="date" required><br>
-          <label for="time">Time:</label>
-          <input type="time" id="time" name="time" required><br>
-          <label for="color">Color:</label>
-          <input type="color" id="color" name="color" required><br>
-          <input type="submit" value="Create Event">
-        </form>
-      </div>
-    </div>
+
 
 
 
@@ -216,19 +192,19 @@
 var isOnKWS=false;
 
 var new_event_title, new_event_color, new_event_time, new_event_date;
-var creating_new_event = false;
+var estado = "listar";
 
 const sensor = new MicrophoneSensor();
   let classifyCache = {};
   let allData = [];
   let allClassifications = [];
-  let casa_vivaStarted = null;
+  let calendarStarted = null;
 
 async function startkws(){
   classifyCache = {};
   allData = [];
   allClassifications = [];
-  casa_vivaStarted = null;
+  calendarStarted = null;
 
   isOnKWS=false;
   //await sensor.takeSample(200, 16000, () => {});
@@ -239,7 +215,7 @@ setTimeout(function(){
   classifyCache = {};
   allData = [];
   allClassifications = [];
-  casa_vivaStarted = null;
+  calendarStarted = null;
 }, 60*60*1000);
 
 const onSampleComplete = (obj) => {
@@ -259,11 +235,11 @@ const onSampleComplete = (obj) => {
       let window = allData.slice(allData.length - windowSize, allData.length);
 
       let noiseCount = 0;
-      let casa_vivaCount = 0;
+      let calendarCount = 0;
       let uncertainCount = 0;
 
       // in here we'll take 1 second slices, with 300 ms. overlap that we then classify (total 14 windows)
-      console.time('classifyWindow');
+      // console.time('classifyWindow');
       for (let wx = 0; wx <= windowSize - classifyWindowLength; wx += classifyWindowOverlap) {
         const cacheKey = allData.length - windowSize + wx;
 
@@ -276,11 +252,12 @@ const onSampleComplete = (obj) => {
 
         classifyResult = classifyCache[cacheKey];
         let noise = classifyResult.results.find(r => r.label === 'noise').value;
-        let casa_viva = classifyResult.results.find(r => r.label === 'casa_viva').value;
+        // console.log(classifyResult)
+        let calendar = classifyResult.results.find(r => r.label === 'casa_viva').value;
         document.addEventListener('keydown', function(event) {
     if (event.key === 'k' || event.key === 'K') 
     {
-      casa_vivaCount++;
+      calendarCount++;
       if(!isOnKWS){
               recognition.start();
               circle.animate(20, 0, 'now').attr({ fill: '#00a431' });
@@ -288,13 +265,13 @@ const onSampleComplete = (obj) => {
               isOnKWS=true;
             }
     }});
-if(casa_viva>.3)
-        console.log(casa_viva);
+if(calendar>.3)
+        // console.log(calendar);
         if (noise >= 0.6) {
             noiseCount++;
         }
-        else if (casa_viva >= 0.6) {
-            casa_vivaCount++; 
+        else if (calendar >= 0.6) {
+            calendarCount++; 
             
             if(!isOnKWS){
               recognition.start();
@@ -342,7 +319,7 @@ InitializeKWS();
   const transcriptDiv = document.getElementById('transcript');
   const energyDiv = document.getElementById('energy');
 
-  var firstSent = "Diga 'Casa Viva' para comecar a falar.";
+  var firstSent = "";
   transcriptDiv.textContent = firstSent;
   var resetfunc ;
 
@@ -362,15 +339,16 @@ InitializeKWS();
     for (var i = event.resultIndex; i < event.results.length; ++i) {
       if (event.results[i].isFinal) {
         //if(event.results[i][0].confidence>0.6)
-        energyDiv.textContent += event.results[i][0].confidence;
+        console.log(event.results)
+        energyDiv.innerHTML += event.results[i][0].confidence + "<br>";
         {
           final_transcript ="";
           console.log("++"+event.results[i][0].transcript+"++");
           final_transcript=event.results[i][0].transcript.trim();
           /*var sentence = event.results[i][0].transcript.trim().toLowerCase();
-          if(sentence.startsWith("casa viva") || sentence.startsWith("viva") || sentence.startsWith("aviva") || sentence.startsWith("sa viva") || sentence.startsWith("da viva") ||sentence.startsWith("ora viva"))
+          if(sentence.startsWith("calendar") || sentence.startsWith("endar") || sentence.startsWith("lendar"))
           {
-            var indSent = sentence.indexOf("viva");
+            var indSent = sentence.indexOf("calendar");
             final_transcript= sentence.slice(indSent+5);
           }*/
         }
@@ -396,8 +374,8 @@ InitializeKWS();
         {
           console.log(event.results[i][0].transcript + " -- " + i);
           var sentence = event.results[i][0].transcript.trim().toLowerCase();
-          /*if(sentence.startsWith("casa viva") || sentence.startsWith("viva") || sentence.startsWith("aviva") || sentence.startsWith("sa viva") || sentence.startsWith("da viva") ||sentence.startsWith("ora viva") ){
-            var indSent = sentence.indexOf("viva");
+          /*if(sentence.startsWith("calendar") || sentence.startsWith("endar") || sentence.startsWith("lendar"))
+            var indSent = sentence.indexOf("calendar");
             final_transcript= sentence.slice(indSent+5);
           }*/
 
@@ -487,194 +465,232 @@ InitializeKWS();
   var mmiCli_1 = null;
   mmiCli_1 = new MMIClient(null, mmi_fusion + "SPEECHIN");
 
-
-
-
   function sendMMI(final_transcript){
 
     var obj = new Object();
     obj.text = final_transcript;
     $.post( "http://localhost:5005/model/parse", JSON.stringify(obj), function( data ) {
-    console.log(data);
-
-    if (data.intent.name=='list_all_events'){
-      $.get( "http://localhost:4000/list_all_events/", JSON.stringify(data), function( api_return ) {
-        console.log(api_return);
-        var eventData=api_return;
-        const eventContainer = document.getElementById("events-container");
-
-        // Loop through the events and add them to the container
-        eventData.forEach(event => {
-        // Create a new div element for each event
-        const eventDiv = document.createElement("div");
-        
-        // Set the text content to the event summary
-        eventDiv.textContent = event.summary;
-
-        // Append the event div to the container
-        eventContainer.appendChild(eventDiv);
-    });
-      });
-    }
-    if (data.intent.name=='list_all_events_of_a_date'){
-      let day, month, year;
-      for (let i = 0; i < data.entities.length; i++) {
-        if (data.entities[i].entity == 'day'){
-          day = data.entities[i].value;
-        }
-        if (data.entities[i].entity == 'month'){
-          month = data.entities[i].value;
-        }
-        if (data.entities[i].entity == 'year'){
-          year = data.entities[i].value;
-        }
-      }
-      let body = {
-        "day":day,
-        "month":month,
-        "year":year
-      }
-      fetch('http://localhost:4000/list_all_events_of_a_date/', {
-         method: "POST",
-         headers: {"content-type": "application/json"},
-         body: JSON.stringify(body),
-      }).then(response => response.json())
-        .then(api_return => {
-          console.log(api_return);
-        })
-    }
-    if (data.intent.name=='list_all_events_of_a_color_tag'){
-      let cor;
-      for (let i = 0; i < data.entities.length; i++) {
-        if (data.entities[i].entity == 'event_cor'){
-          cor = data.entities[i].value;
-        }
-      }
-      let body = {
-        "cor":cor
-      }
-      fetch('http://localhost:4000/list_all_events_of_a_color_tag/', {
-         method: "POST",
-         headers: {"content-type": "application/json"},
-         body: JSON.stringify(body),
-      }).then(response => response.json())
-        .then(api_return => {
-          console.log(api_return);
-        })
-    }
-    if (data.intent.name=='list_an_event_by_title'){
-      let title;
-      for (let i = 0; i < data.entities.length; i++) {
-        if (data.entities[i].entity == 'event_title'){
-          title = data.entities[i].value;
-        }
-      }
-      let body = {
-        "title":title
-      }
-      console.log(body)
-      fetch('http://localhost:4000/list_an_event_by_title/', {
-         method: "POST",
-         headers: {"content-type": "application/json"},
-         body: JSON.stringify(body),
-      }).then(response => response.json())
-        .then(api_return => {
-          console.log(api_return);
-        })
-    }
-    if (data.intent.name=='create_event'){
-      creating_new_event = true;
-      //abrir modal e tratar da sauce
-      // JavaScript to handle modal opening
-        // Display the modal
-      document.getElementById('event-modal').style.display = 'block';
+      console.log(data);
+      message = {}
       
+      if (data.intent.name=='list_all_events' && estado == "listar"){
 
-      // Get the modal
-      var modal = document.getElementById('event-modal');
-
-      // Get the <span> element that closes the modal
-      var span = document.getElementsByClassName("close")[0];
-
-      // When the user clicks on <span> (x), close the modal
-      span.onclick = function() {
-        modal.style.display = "none";
+        var message = {'intent':'list_all_events'}
       }
-
-      // When the user clicks anywhere outside of the modal, close it
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal.style.display = "none";
+      
+      if (data.intent.name=='list_all_events_of_a_day' && estado == "listar"){
+        let day = "", month = "", year = "";
+        for (let i = 0; i < data.entities.length; i++) {
+          if (data.entities[i].entity == 'day'){
+            day = data.entities[i].value;
+          }
+          if (data.entities[i].entity == 'month'){
+            month = data.entities[i].value;
+          }
+          if (data.entities[i].entity == 'year'){
+            year = data.entities[i].value;
+          }
         }
+        let body = {
+          'day':day,
+          'month':month,
+          'year':year
+        }
+        var message = {'intent':'list_all_events_of_a_day','body':body}
       }
 
-      // Handle form submission
-      document.getElementById('event-form').onsubmit = function(event) {
-        event.preventDefault();
-        // Here you would handle form submission, like sending data to your server
-        modal.style.display = "none";
+      if (data.intent.name=='list_all_events_of_a_date' && estado == "listar"){
+        let date = "";
+        for (let i = 0; i < data.entities.length; i++) {
+          if (data.entities[i].entity == 'date'){
+            date = data.entities[i].value;
+          }
+        }
+        let body = {
+          'date':date
+        }
+        var message = {'intent':'list_all_events_of_a_date','body':body}
       }
 
-    }
-    if (data.intent.name=='provide_event_title'){
-      if (creating_new_event) {
-        
-      }
-    }
-    if (data.intent.name=='provide_event_date'){
-      if (creating_new_event) {
-        
-      }
-    }
-    if (data.intent.name=='provide_event_time'){
-      if (creating_new_event) {
-      }
-    }
-    if (data.intent.name=='provide_event_color'){
-      if (creating_new_event) {
-        
-      }
-    }
-    if (data.intent.name=='submit_event'){
-      if (creating_new_event) {
-        creating_new_event = false;
-      }
-    }
-    if (data.intent.name=='cancel_evento'){
-      if (creating_new_event) {
-        var modal = document.getElementById('event-modal');
-        modal.style.display = "none";
-        creating_new_event=false;
-      }
-    }
+      if (data.intent.name=='list_all_events_of_a_color_tag' && estado == "listar"){
+        let color_tag = "";
+        for (let i = 0; i < data.entities.length; i++) {
+          if (data.entities[i].entity == 'color_tag'){
+            color_tag = data.entities[i].value;
+          }
+        }
+        let body = {
+          "cor":color_tag
+        }
+        var message = {'intent':'list_all_events_of_a_color_tag','body':body}
+        // fetch('http://localhost:4000/list_all_events_of_a_color_tag/', {
+        //    method: "POST",
+        //    headers: {"content-type": "application/json"},
+        //    body: JSON.stringify(body),
+        // }).then(response => response.json())
+        //   .then(api_return => {
+        //     console.log(api_return);
+        //   var eventData=api_return;
+        //   const eventContainer = document.getElementById("events-container");
+        //   eventContainer.innerHTML = '';
 
-    // if(data.intent.name=='change_color'){
-    //   var shape='' ;
-    //   var color='' ;
+        //   // Loop through the events and add them to the container
+        //   eventData.forEach(event => {
+        //   // Create a new div element for each event
+        //   const eventDiv = document.createElement("div");
+          
+        //   // Set the text content to the event summary
+        //   eventDiv.textContent = event.summary;
 
-    //   for (let i = 0; i < data.entities.length; i++)
-    //   {
-    //     if(data.entities[i].entity=='shape')
-    // 	    shape=data.entities[i].value;
-    //     if(data.entities[i].entity=='color')
-    // 	    color=data.entities[i].value;
-    //   }
-  
-    //   var message = {'intent':'change_color','shape':shape,'color':color}
-    //   var messaget = btoa(unescape(encodeURIComponent(final_transcript)));
-    //   var result = { "recognized" : ["SPEECH", "SPEECHIN", "APP"], "text": messaget, "nlu": message };
-    //   mmiCli_1.sendToIM(new LifeCycleEvent("SPEECHIN", "IM", "text-1", "ctx-1").
-    //         doExtensionNotification(new EMMA("text-", "text", "command", 1, 0).
-    //         setValue(JSON.stringify(result))));
-    // }
-  });
+        //   // Append the event div to the container
+        //   eventContainer.appendChild(eventDiv);})
+        //   })
+      }
+      
+      if (data.intent.name=='list_an_event_by_title' && estado == "listar"){
+        let title = "";
+        for (let i = 0; i < data.entities.length; i++) {
+          if (data.entities[i].entity == 'title'){
+            title = data.entities[i].value;
+          }
+        }
+        let body = {
+          "title":title
+        }
+        var message = {'intent':'list_an_event_by_title','body':body}
+        // console.log(body)
+        // fetch('http://localhost:4000/list_an_event_by_title/', {
+        //    method: "POST",
+        //    headers: {"content-type": "application/json"},
+        //    body: JSON.stringify(body),
+        // }).then(response => response.json())
+        //   .then(api_return => {
+        //     console.log(api_return);
+        //     var eventData=api_return;
+        //   const eventContainer = document.getElementById("events-container");
+        //   eventContainer.innerHTML = '';
 
-  /*
-    
-            */
+        //   // Loop through the events and add them to the container
+        //   eventData.forEach(event => {
+        //   // Create a new div element for each event
+        //   const eventDiv = document.createElement("div");
+          
+        //   // Set the text content to the event summary
+        //   eventDiv.textContent = event.summary;
+
+        //   // Append the event div to the container
+        //   eventContainer.appendChild(eventDiv);})
+        //   })
+      }
+      
+      if (data.intent.name=='create_event' && estado == "listar"){
+          // var modal = document.getElementById('event-modal');
+          // modal.style.display = "none";
+          estado = "criar";
+          var message = {'intent':'create_event'}
+      }
+      
+      if (data.intent.name=='update_event' && estado == "listar"){
+          // var modal = document.getElementById('event-modal');
+          // modal.style.display = "none";
+          estado = "criar";
+          var message = {'intent':'update_event'}
+      }
+      
+      if (data.intent.name=='provide_title' && estado == "criar"){
+        let title = "";
+        for (let i = 0; i < data.entities.length; i++) {
+          if (data.entities[i].entity == 'title'){
+            title = data.entities[i].value;
+          }
+        }
+        let body = {
+          "title":title
+        }
+        var message = {'intent':'provide_title','body':body}
+      }
+
+      if (data.intent.name=='provide_event_day' && estado == "criar"){
+        let day = "", month = "", year = "";
+        for (let i = 0; i < data.entities.length; i++) {
+          if (data.entities[i].entity == 'day'){
+            day = data.entities[i].value;
+          }
+          if (data.entities[i].entity == 'month'){
+            month = data.entities[i].value;
+          }
+          if (data.entities[i].entity == 'year'){
+            year = data.entities[i].value;
+          }
+        }
+        let body = {
+          'day':day,
+          'month':month,
+          'year':year
+        }
+        var message = {'intent':'provide_event_day','body':body}
+      }
+      
+      if (data.intent.name=='provide_event_date' && estado == "criar"){
+        let date = "";
+        for (let i = 0; i < data.entities.length; i++) {
+          if (data.entities[i].entity == 'date'){
+            date = data.entities[i].value;
+          }
+        }
+        let body = {
+          'date':date
+        }
+        var message = {'intent':'provide_event_date','body':body}
+      }
+      
+      if (data.intent.name=='provide_time' && estado == "criar"){
+        let time = "";
+        for (let i = 0; i < data.entities.length; i++) {
+          if (data.entities[i].entity == 'time'){
+            time = data.entities[i].value;
+          }
+        }
+        let body = {
+          'time':time
+        }
+        var message = {'intent':'provide_time','body':body}
+      }
+      
+      if (data.intent.name=='provide_color_tag' && estado == "criar"){
+        let color_tag = "";
+        for (let i = 0; i < data.entities.length; i++) {
+          if (data.entities[i].entity == 'color_tag'){
+            color_tag = data.entities[i].value;
+          }
+        }
+        let body = {
+          "cor":color_tag
+        }
+        var message = {'intent':'provide_color_tag','body':body}
+      }
+
+      if (data.intent.name=='submit_event' && estado == "criar"){
+        estado="listar";
+        var message = {'intent':'submit_event'}
+      }
+      
+      if (data.intent.name=='cancel_event' && estado == "criar"){
+        // var modal = document.getElementById('event-modal');
+        // modal.style.display = "none";
+        estado="listar";
+        var message = {'intent':'cancel_event'}
+      }
+
+      if (message != {}){
+        var messaget = btoa(unescape(encodeURIComponent(final_transcript)));
+        var result = { "recognized" : ["SPEECH", "SPEECHIN", "APP"], "text": messaget, "nlu": message };
+        mmiCli_1. sendToIM(new LifeCycleEvent("SPEECHIN", "IM", "text-1", "ctx-1").
+                  doExtensionNotification(new EMMA("text-", "text", "command", 1, 0).
+                  setValue(JSON.stringify(result))));
+      }
+    });
   }
- // sendMMI("mudar para azul o circulo");
-  
 
   var mmiCli_Out_add = "wss://"+host+":8005/IM/USER1/";
   var mmiCli_Out = null;

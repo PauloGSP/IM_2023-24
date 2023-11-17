@@ -118,45 +118,47 @@ nlu:
 
 - intent: list_an_event_by_title
   examples: |
-    - Procura pelo evento [consulta no médico](title)
-    - Procura pelo evento com o título [conferência google](title)
-    - Há algum evento de nome [ir ao café](title)
-    - Encontra o evento [reunião de trabalho](title)
-    - Encontra o evento de título [trabalho](title)
-    - Quero ver o evento [encontro de amigos](title)
-    - Quero que me dês o evento chamado [entrega do trabalho](title)
+    - Procura pelo evento [consulta no médico](title).
+    - Procura pelo evento com o título [conferência google](title).
+    - Há algum evento de nome [ir ao café](title)?
+    - Encontra o evento [reunião de trabalho](title).
+    - Encontra o evento de título [trabalho](title).
+    - Quero ver o evento [encontro de amigos](title).
+    - Quero que me dês o evento chamado [entrega do trabalho](title).
 
   # # FORMS
   # Create a new event in the calendar
 
 - intent: create_event
   examples: |
-    - Quero criar um novo evento
-    - Adicionar um evento ao meu calendário
-    - Gostaria de marcar um novo compromisso
-    - Vamos marcar um novo evento no calendário
+    - Quero criar um novo evento.
+    - Criar um novo evento.
+    - Adicionar um evento ao meu calendário.
+    - Gostaria de marcar um novo compromisso.
+    - Vamos marcar um novo evento no calendário.
 
 - intent: update_event
   examples: |
-    - Preciso de mudar um evento um novo evento
-    - Adicionar um evento ao meu calendário
-    - Gostaria de marcar um novo compromisso
-    - Vamos marcar um novo evento no calendário
+    - Preciso de mudar um evento um evento.
+    - Editar um evento no meu calendário.
+    - Gostaria de alterar um compromisso.
+    - Editar um evento.
+    - Update um evento existente.
 
 - intent: provide_title
   examples: |
-    - Mete no título [Consulta no Dentista](title)
-    - Nomeia o evento de [Reunião do Projeto](title)
-    - O título deve ser [Café com o João](title)
-    - Chama o evento de [Aula de Ioga](title)
+    - Mete no título [Consulta no Dentista](title).
+    - Nomeia o evento de [Reunião do Projeto](title).
+    - O título deve ser [ ](title).
+    - Chama o evento de [Aula de Ioga](title).
 
 - intent: provide_event_day
   examples: |
-    - Mete a data de dia [13](day) de [Fevereiro](month) de [2023](year)
-    - Quero que marques para o dia [3](day) de [Julho](month) de [2025](year)
-    - Marca o evento para o dia [5](day) de [Junho](month) de [2040](year)
-    - Agenda para o dia [20](day) de [Dezembro](month) de [2080](year)
-    - O evento será no dia [16](day) de [Outubro](month) de [2050](year)
+    - Mete a data de dia [13](day) de [k](month) de [2023](year).
+    - Quero que marques para o dia [3](day) de [Julho](month) de [2025](year).
+    - Marca o evento para o dia [5](day) de [Junho](month) de [2040](year).
+    - Agenda para o dia [20](day) de [Dezembro](month) de [2080](year).
+    - O evento será no dia [16](day) de [Outubro](month) de [2050](year).
 
 - intent: provide_event_date
   examples: |
@@ -169,31 +171,31 @@ nlu:
 
 - intent: provide_time
   examples: |
-    - Começa às [10 e 30](time)
-    - O horário deve ser [14:30](time)
-    - Defina o horário para as [17 horas](time)
-    - Preciso que seja às [20 horas](time)
-    - Inicie o evento às [7 da manhã](time)
+    - Começa às [10 e 30](time).
+    - O horário deve ser [14:30](time).
+    - Defina o horário para as [17 horas](time).
+    - Preciso que seja às [20 horas](time).
+    - Inicie o evento às [7 da manhã](time).
 
 - intent: provide_color_tag
   examples: |
-    - Usa a cor [azul](color_tag)
-    - Utiliza a cor [vermelho](color_tag)
-    - Quero a cor [amarelo](color_tag)
-    - Cor [verde](color_tag)
+    - Usa a cor [azul](color_tag).
+    - Utiliza a cor [vermelho](color_tag).
+    - Quero a cor [amarelo](color_tag).
+    - Cor [verde](color_tag).
 
 - intent: submit_event
   examples: |
-    - Submete o evento
-    - Adicionar o evento
-    - Criar o evento
-    - Feito
-    - Evento conluído
+    - Submete o evento.
+    - Adicionar o evento.
+    - Criar o evento.
+    - Feito.
+    - Evento conluído.
 
 - intent: cancel_event
   examples: |
-    - Cancela o evento
-    - Voltar para o calendário
-    - Cancelar
-    - Voltar
-    - Sair
+    - Cancela o evento.
+    - Voltar para o calendário.
+    - Cancelar.
+    - Voltar.
+    - Sair.
