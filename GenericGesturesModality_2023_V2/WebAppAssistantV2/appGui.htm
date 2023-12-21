@@ -1,223 +1,181 @@
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="utf-8">
-      <title>Calendário</title>
-
-
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
-      
-      <style>
-        /* Additional styling for modern look */
-        :root {
-          --primary-color: #4F5D73;
-          --secondary-color: #f0f0f0;
-          --text-color: #333;
-          --background-color: #fff;
-        }
-
-        h1 {
-          background-color: var(--primary-color);
-          color: var(--background-color);
-          margin: 0;
-          padding: 10px;
-          text-align: center;
-        }
-
-        h2 {
-          font-size: 1.5rem;
-          color: var(--text-color);
-          margin-bottom: 0.5rem;
-          text-align: center;
-        }
-        @media (max-width: 768px) {
-          .top-section {
-            flex-direction: column;
-          }
-          
-          .calendar-container,
-          .events-container {
-            flex: 0 0 auto;
-          }
-          
-          iframe {
-            height: 50vh;
-          }
-        }
-         .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-      }
-
-      .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto; /* 15% from the top and centered */
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%; /* Could be more or less, depending on screen size */
-      }
-      body {
-        font-family: 'Poppins', sans-serif;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        background: #fff;
-      }
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Calendário</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4F5D73;
+      --secondary-color: #f0f0f0;
+      --text-color: #333;
+      --background-color: #fff;
+    }
+    h1 {
+      background-color: var(--primary-color);
+      color: var(--background-color);
+      margin: 0;
+      padding: 10px;
+      text-align: center;
+    }
+    h2 {
+      font-size: 1.5rem;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    @media (max-width: 768px) {
       .top-section {
-        display: flex;
-        flex: 1;
-        padding-top: 5px; /* Adjust based on your actual header's height */
+        flex-direction: column;
       }
-      
-
-      .calendar-container {
-        flex: 0 0 70%;
-        overflow-y: auto;
-        margin: 0 auto;
-      }
-
+      .calendar-container,
       .events-container {
-        flex: 1; /* Adjust the flex property for the events container */
-        overflow-y: auto;
+        flex: 0 0 auto;
       }
-      #events-list{
-        text-align: center;
-        flex: 1;
-        overflow-y: auto;
+      
+      iframe {
+        height: 50vh;
       }
-
-        .mic{
-          width: 150px;
-        }
-        .container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          border-radius: 10px;
-          background-color: #f0f0f0;
-        }
-
-        .responseText{
-          border: solid 2px #8ea7cf;
-          margin: 2%;
-          color: #41683a;
-        }
-
-        .bottomNav{
-          
-          position: absolute;
-          bottom: 2%;
-          width: 95%;
-        }
-        .recognized{
-          font-size:x-large;
-        }
-
-        iframe {
-          width: 100%;
-          height: 75vh;
-          border: none;
-          border-radius: 9px;
-        }
-      </style>
-    </head>
-    <body>
-
-
-
-      <h1 style="background-color: #4F5D73; margin: 0;">Assistente de Calendário</h1>
-      <!-- <p>Click the button below and start speaking.</p>
-        <button id="start-btn">Start</button>
-      -->
-      
-      
-      <div id="response" class=""  style=""></div>
-   
-   
-           <div class="top-section">
-         <div class="calendar-container">
-           <h2>Meu Calendário</h2>
-           <!-- Google Calendar iframe goes here -->
-           <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=2&bgcolor=%239bc9fa&ctz=Europe%2FLisbon&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=bXVsdGltb2RhbGNhbGVuZGFyQGdtYWlsLmNvbQ&color=%23039BE5" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>         </div>
-         <div id="events-container" class="events-container" >
-           <h2>Lista de Eventos</h2>
-           <!-- Events will be dynamically added here -->
-           <div id="events-list" ></div>
-
-         </div>
-       </div>
-       <div id="event-modal" class="modal">
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <form id="event-form">
-            <label for="title">Título:</label>
-            <input type="text" id="title" name="title" required><br>
-            <label for="date">Data:</label>
-            <input type="date" id="date" name="date" required><br>
-            <label for="time">Horário:</label>
-            <input type="time" id="time" name="time" required><br>
-            <label for="color">Cor:</label>
-            <input type="text" id="color" name="color" required><br>
-            <input type="submit" value="Create Event">
-          </form>
+    }
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto; /* 15% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%; /* Could be more or less, depending on screen size */
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: #fff;
+    }
+    .top-section {
+      display: flex;
+      flex: 1;
+      padding-top: 5px; /* Adjust based on your actual header's height */
+    }
+    .calendar-container {
+      flex: 0 0 70%;
+      overflow-y: auto;
+      margin: 0 auto;
+    }
+    .events-container {
+      flex: 1; /* Adjust the flex property for the events container */
+      overflow-y: auto;
+    }
+    #events-list{
+      text-align: center;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .mic{
+      width: 150px;
+    }
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      border-radius: 10px;
+      background-color: #f0f0f0;
+    }
+    .responseText{
+      border: solid 2px #8ea7cf;
+      margin: 2%;
+      color: #41683a;
+    }
+    .bottomNav{
+      position: absolute;
+      bottom: 2%;
+      width: 95%;
+    }
+    .recognized{
+      font-size:x-large;
+    }
+    iframe {
+      width: 100%;
+      height: 75vh;
+      border: none;
+      border-radius: 9px;
+    }
+    #moves-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around; /* Adjust as needed for spacing */
+    }
+    #moves-list img {
+      width: calc(33.33% - 10px); /* Adjust the subtraction value for spacing */
+      height: auto; /* Keeps the aspect ratio of the image */
+      margin: 5px; /* Spacing between images */
+      object-fit: cover; /* This makes the image cover the area, can be adjusted */
+    }
+  </style>
+</head>
+<body>
+  <h1 style="background-color: #4F5D73; margin: 0;">Assistente de Calendário</h1>
+  <div id="response"></div>
+    <div class="top-section">
+      <div class="calendar-container">
+        <h2>Meu Calendário</h2>
+        <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=2&bgcolor=%239bc9fa&ctz=Europe%2FLisbon&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=bXVsdGltb2RhbGNhbGVuZGFyQGdtYWlsLmNvbQ&color=%23039BE5" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+      </div>
+      <div id="events-container" class="events-container" >
+        <div style="min-height: 10%;">
+          <h2>Dia Selecionado</h2>
+          <div id="selected-day-display">None</div>
+        </div>
+        <h2>Lista de Movimentos</h2>
+        <div id="moves-list">
+          <img src="./moves/template.jpeg">
+          <img src="./moves/template.jpeg">
+          <img src="./moves/template.jpeg">
+          <img src="./moves/template.jpeg">
+          <img src="./moves/template.jpeg">
+          <img src="./moves/template.jpeg">
+          <img src="./moves/template.jpeg">
+          <img src="./moves/template.jpeg">
+          <img src="./moves/template.jpeg">
         </div>
       </div>
-      
-
     </div>
-
-      <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@latest/dist/svg.min.js"></script>
-      <script src="js/mmi.js"></script>
-      <script src="js/globals.js"></script>
-      <script src="js/jquery-3.6.4.min.js"></script>
-      <script src="js/webtoolkit.utf8.js"></script>
-
-
-
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@latest/dist/svg.min.js"></script>
+  <script src="js/mmi.js"></script>
+  <script src="js/globals.js"></script>
+  <script src="js/jquery-3.6.4.min.js"></script>
+  <script src="js/webtoolkit.utf8.js"></script>
   <script type="module">
-
-
     var mmiCli_Out_add = "wss://"+host+":8005/IM/USER1/";
     var mmiCli_Out = null;
+    var selectedDay = "2023-12-21";
     mmiCli_Out = new MMIClientSocket(mmiCli_Out_add + "APP");
     mmiCli_Out.onMessage.on(im1MessageHandler);
     mmiCli_Out.onOpen.on(socketOpenHandler);
     mmiCli_Out.openSocket();
 
-
     function socketOpenHandler(event) {
       console.log("---------------openSocketHandler---------------")
-
-      if(mmiCli_Out.socket.readyState !== WebSocket.OPEN)
-      {
-          return;
-      }
+      if(mmiCli_Out.socket.readyState !== WebSocket.OPEN){return;}
     }
 
-    //setup inicial (por os cenas a cinza)
-    let circle = SVG.find('.circle');
-    let square = SVG.find('.square');
-    let triangle = SVG.find('.triangle');
-    var creating_new_event = false;
-
-    circle.animate().attr({fill:'#ccc'});
-    square.animate().attr({fill:'#ccc'});
-    triangle.animate().attr({fill:'#ccc'});
-
-    //ns como mexer nisto
     function im1MessageHandler(data) {
 
       console.log("--------------im1MessageHandler---------------");
@@ -234,385 +192,9 @@
             //$("#response").addClass("container");
             //$("#response").addClass("responseText");
 
-            let c = JSON.parse(content);
-            if (c.hasOwnProperty("nlu") && c.nlu.intent== "list_all_events"){
-              $.get( "http://localhost:4000/list_all_events/", JSON.stringify(data), function( api_return ) {
-                console.log(api_return);
-                var eventData=api_return;
-                const eventContainer = document.getElementById("events-list");
-                eventContainer.innerHTML = '';
-                // Loop through the events and add them to the container
-                sendToVoice("Listando os próximos eventos");
+            let c = JSON.parse(content)
 
-                eventData.forEach(event => {
-                // Create a new div element for each event
-                const eventDiv = document.createElement("div");
-            
-                // Set the text content to the event summary
-                eventDiv.textContent = event.summary;
-                // Append the event div to the container
-                eventContainer.appendChild(eventDiv);
-                });
-              });
-            }
-            
-            if (c.hasOwnProperty("nlu")&& c.nlu.intent=="list_all_events_of_a_day"){
-              let day;
-              let month;
-              let year;
-              console.log(c.nlu.body);
-              
-              day = c.nlu.body.day.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); console.log(day); 
-              month = c.nlu.body.month.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); 
-              year = c.nlu.body.year.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); 
-              
-              console.log(day);
-              console.log(month);
-              console.log(year); 
-              
-              let body = {
-                "day":day,
-                "month":month,
-                "year":year
-              }
-              fetch('http://localhost:4000/list_all_events_of_a_day/', {
-                method: "POST",
-                headers: {"Access-Control-Allow-Origin" : "*", "content-type": "application/json"},
-                body: JSON.stringify(body),
-              }).then(response => response.json())
-              .then(api_return => {
-                console.log(api_return);
-                var eventData=api_return;
-                const eventContainer = document.getElementById("events-list");
-                eventContainer.innerHTML = '';
-                
-                // Loop through the events and add them to the container
-                sendToVoice("Listando os eventos de dia "+day+" de "+month+" de "+year+".");
-                eventData.forEach(event => {
-                // Create a new div element for each event
-                const eventDiv = document.createElement("div");
-                
-                // Set the text content to the event summary
-                eventDiv.textContent = event.summary;
-                
-                // Append the event div to the container
-                eventContainer.appendChild(eventDiv);})
-              })
-            }
-            
-            if (c.hasOwnProperty("nlu")&& c.nlu.intent== "list_all_events_of_a_date"){
-                let date;
-                console.log(c.nlu.body);
-                
-                date = c.nlu.body.date.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); console.log(date); 
-               
-                console.log(date); 
-                
-                let body = {
-                  "date":date
-                }
-               fetch('http://localhost:4000/list_all_events_of_a_date/', {
-                  method: "POST",
-                  headers: {"content-type": "application/json"},
-                  body: JSON.stringify(body),
-               }).then(response => response.json())
-                 .then(api_return => {
-                   console.log(api_return);
-                  var eventData=api_return;
-                  const eventContainer = document.getElementById("events-list");
-                  eventContainer.innerHTML = '';
-                  
-                  // Loop through the events and add them to the container
-                  sendToVoice("Listando os eventos de "+date);
-                  eventData.forEach(event => {
-                  // Create a new div element for each event
-                  const eventDiv = document.createElement("div");
-                  
-                  // Set the text content to the event summary
-                  eventDiv.textContent = event;
-                  // Append the event div to the container
-                  eventContainer.appendChild(eventDiv);})
-                  })
-            }
-
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="list_all_events_of_a_color_tag") {
-              let cor;
-                console.log(c.nlu.body);
-                
-                cor = c.nlu.body.cor.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); console.log(cor); 
-               
-                console.log(cor); 
-                
-                let body = {
-                  "cor":cor
-                }
-               fetch('http://localhost:4000/list_all_events_of_a_color_tag/', {
-                  method: "POST",
-                  headers: {"content-type": "application/json"},
-                  body: JSON.stringify(body),
-               }).then(response => response.json())
-                 .then(api_return => {
-                   console.log(api_return);
-                 var eventData=api_return;
-                 const eventContainer = document.getElementById("events-list");
-                 eventContainer.innerHTML = '';
-                // Loop through the events and add them to the container
-                 eventData.forEach(event => {
-                 // Create a new div element for each event
-                 const eventDiv = document.createElement("div");
-              
-                 // Set the text content to the event summary
-                 eventDiv.textContent = event.summary;
-
-                 // Append the event div to the container
-                 eventContainer.appendChild(eventDiv);})
-                 sendToVoice("Listando os da cor "+cor);
-
-                 })
-            }              
-            
-
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="list_an_event_by_title") {
-              let title;
-              console.log(c.nlu.body);
-              
-              title = c.nlu.body.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); console.log(title); 
-              
-              console.log(title); 
-              
-              let body = {
-                "title":title
-              }
-              fetch('http://localhost:4000/list_an_event_by_title/', {
-                method: "POST",
-                headers: {"content-type": "application/json"},
-                body: JSON.stringify(body),
-              }).then(response => response.json())
-                .then(api_return => {
-                  console.log(api_return);
-                var eventData=api_return;
-                const eventContainer = document.getElementById("events-list");
-                eventContainer.innerHTML = '';
-              // Loop through the events and add them to the container
-                eventData.forEach(event => {
-                // Create a new div element for each event
-                const eventDiv = document.createElement("div");
-            
-                // Set the text content to the event summary
-                eventDiv.textContent = event.summary;
-
-                // Append the event div to the container
-                eventContainer.appendChild(eventDiv);})
-                sendToVoice("Listando o evento com título "+title);
-
-              }) 
-            }
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="provide_title") {
-              let title;
-              console.log(c.nlu.body);
-              
-              title = c.nlu.body.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); console.log(title); 
-              console.log(title);
-              
-              var titleInput = document.getElementById('title');
-              titleInput.value = title; // Set the title in the input field
-              
-
-            }
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="provide_event_date") {
-              let date;
-              console.log(c.nlu.body);
-              
-              date = c.nlu.body.date.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); console.log(date); 
-
-              let body = {
-                "date":date
-              };
-              console.log(body);
-              fetch('http://localhost:4000/provide_event_date/', {
-                method: "POST",
-                headers: {"content-type": "application/json"},
-                body: JSON.stringify(body),
-              }).then(response => response.json())
-                .then(api_return => {
-                  console.log(api_return);
-                  var dateInput = document.getElementById('date');
-                  
-                  dateInput.value = api_return; // Set the title in the input field
-              })
-            }
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="provide_event_day") {
-              let day;
-              let month;
-              let year;
-              console.log(c.nlu.body);
-              
-              day = c.nlu.body.day.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); console.log(day); 
-              month = c.nlu.body.month.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); 
-              year = c.nlu.body.year.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); 
-              console.log(month);
-              if (parseInt(day)<10){
-                day='0'+day
-              };
-              switch (month) {
-                  case 'janeiro':
-                    month='01';
-                  break;
-                  case 'fevereiro':
-                    month='02'
-                  break;
-                  case 'marco' || 'março':
-                    month='03'
-                  break;
-                  case 'abril':
-                    month='04'
-                  break;
-                  case 'maio':
-                    month='05'
-                  break;
-                  case 'junho':
-                    month='06'
-                  break;
-                  case 'julho':
-                    month='07'
-                  break;
-                  case 'agosto':
-                    month='08'
-                  break;
-                  case 'setembro':
-                    month='09'
-                  break;
-                  case 'outubro':
-                    month='10'
-                  break;
-                  case 'novembro':
-                    month='11'
-                  break;
-                  case 'dezembro':
-                    month='12'
-                  break;
-                default:
-                  month='01'
-                  break;
-              }
-              console.log(day);
-              console.log(month);
-              console.log(year); 
-              
-              let body = {
-                "day":day,
-                "month":month,
-                "year":year
-              }
-              var dateInput = document.getElementById('date');
-              dateInput.value = year+"-"+month+"-"+day; // Set the title in the input field
-            }
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="provide_color_tag") {
-              let cor;
-              console.log(c.nlu.body);
-              
-              cor = c.nlu.body.cor.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-              
-              var corInput = document.getElementById('color');
-              corInput.value = cor
-            }
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="provide_time") {
-              let time;
-              let hours;
-              let minutes;
-              console.log(c.nlu.body);
-              
-              time = c.nlu.body.time.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-              time = time.split(/[^0-9]/);
-              console.log(time);
-              console.log(time.length);
-              if (time.length > 1){
-                hours = time[0]
-                var end_hours= toString(parseInt(time[0])+1);
-                minutes = time[1]
-              } else {
-                hours = time[0]
-                minutes = "00"
-              }
-              
-              var timeInput = document.getElementById('time');
-              timeInput.value = hours+":"+minutes;
-            }
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="submit_event") {
-              var titleInput = document.getElementById('title');
-              var dateInput = document.getElementById('date');
-              var timeInput = document.getElementById('time');
-              var corInput = document.getElementById('color');
-              
-              let data = dateInput.value.split(/[^0-9]/);
-              let day = data[2];
-              let month = data[1];
-              let year = data[0];
-              var body = {
-                "title":titleInput.value,
-                "cor":corInput.value,
-                "time":timeInput.value,
-                "day":day,
-                "month":month,
-                "year":year,
-              };
-              console.log(body);
-
-              fetch('http://localhost:4000/create_new_event/', {
-                method: "POST",
-                headers: {"content-type": "application/json"},
-                body: JSON.stringify(body),
-              }).then(response => response.json())
-                .then(api_return => {
-                  console.log(api_return);
-                  var modal = document.getElementById('event-modal');
-                  modal.style.display="none";
-                  creating_new_event = false;
-                  sendToVoice("Criado novo evento");
-
-              })
-            }
-            // FECHAR MODAL
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="create_event"){
-              
-              console.log(modal)
-              var modal = document.getElementById('event-modal');
-              modal.style.display = 'block';
-              
-
-              // Get the modal
-
-              // Get the <span> element that closes the modal
-              var span = document.getElementsByClassName("close")[0];
-
-              // When the user clicks on <span> (x), close the modal
-              span.onclick = function() {
-                modal.style.display = "none";
-              }
-
-              // When the user clicks anywhere outside of the modal, close it
-              window.onclick = function(event) {
-                if (event.target == modal) {
-                  modal.style.display = "none";
-                }
-              }
-              //mudar pro submit
-              // Handle form submission
-              document.getElementById('event-form').onsubmit = function(event) {
-                event.preventDefault();
-                // Here you would handle form submission, like sending data to your server
-                modal.style.display = "none";
-              }
-
-            }
-            if (c.hasOwnProperty("nlu") && c.nlu.intent=="cancel_event") {
-              var modal = document.getElementById('event-modal');
-              modal.style.display="none";
-              creating_new_event = false;
-              
-              console.log('goated')
-              sendToVoice("Cancelei e fechei o evento " );
-            }
+            selectedDay = "AAAA";
 
             /*setTimeout(function(){\
               $("#response").html("");
@@ -625,41 +207,35 @@
       }
     }
 
+    function displaySelectedDay() {
+      const el = document.getElementById('selected-day-display');
+      el.textContent = `${selectedDay}`;
+    }
 
-  ///// Voice part untouched for now
+    ///// Voice part untouched for now
 
     var mmiCli_1 = null;
     mmiCli_1 = new MMIClient(null, "https://"+host+":8000/IM/USER1/APPSPEECH");
 
-    circle.on('click', function(){
-        console.log("circulo");
-        sendToVoice("circulo");
-    })
-
-    square.on('click', function(){
-        console.log("quadrado");
-        sendToVoice("quadradoç");
-    })
-
-    triangle.on('click', function(){
-        console.log("triangulo");
-        sendToVoice("triangulo");
-    })
-
     function sendToVoice(texto){
-      //let speak = "&lt;speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"pt-PT\"&gt;&lt;p&gt;" + "quadrado" + "&lt;/p&gt;&lt;/speak&gt";
-    let speak = "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"pt-PT\"><p>"+texto+"</p></speak>";
-    var result = speak;
-        mmiCli_1.sendToIM(new LifeCycleEvent("APPSPEECH", "IM", "text-1", "ctx-1").
-            doStartRequest(new EMMA("text-", "text", "command", 1, 0).
-              setValue(JSON.stringify(result))));
+      let speak = "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"pt-PT\"><p>"+texto+"</p></speak>";
+      var result = speak;
+      mmiCli_1.sendToIM(new LifeCycleEvent("APPSPEECH", "IM", "text-1", "ctx-1").
+        doStartRequest(new EMMA("text-", "text", "command", 1, 0).
+        setValue(JSON.stringify(result))));
     }
-    
-
-
-
-    /////////////////////////////////////////
-
-  </script> 
-    </body>
-  </html>
+  </script>
+  <script>
+    let selectedDay = "2023-12-21"; // Default or fetched value
+    function updateSelectedDay(year, month, day) {
+      selectedDay = `${year}-${month}-${day}`;
+      displaySelectedDay();
+    }
+    function displaySelectedDay() {
+      const el = document.getElementById('selected-day-display');
+      el.textContent = `${selectedDay}`;
+    }
+    displaySelectedDay();
+  </script>
+</body>
+</html>

@@ -8,3 +8,4 @@ CAroot.crt
 /googleInteractionManager/__pycache__
 /WebAppAssistantV2/cert.pem
 /WebAppAssistantV2/key.pem
+.DS_Store
