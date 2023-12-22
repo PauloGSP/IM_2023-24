@@ -193,11 +193,25 @@
       width: 50%; /* Adjust as needed */
       text-align: center;
     }
+
+    .event-preview {
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+    }
+    
+    .event-preview h4 {
+      margin-bottom: 10px;
+    }
+    
+    #eventPreviewContent p {
+      margin: 5px 0;
+    }
   </style>
 </head>
 <body>
   <h1 style="background-color: #4F5D73; margin: 0;">Assistente de Calendário</h1>
-  <button id="testButton" onclick="testMessageHandler('OPENE')">Day Left</button>
+  <!-- <button id="testButton" onclick="testMessageHandler('OPENE')">Day Left</button> -->
   <div id="response"></div>
     <div class="top-section">
       <div class="calendar-container">
@@ -230,23 +244,25 @@
           <p style="text-align: center;">Expandir dia</p>
         </div>
         <div id="selectedEventDetails" class="selected-event-details">
-          <h2>Selected Event:</h2>
-          <div id="selectedEventInfo" style="align-items: center; text-align: center; font-size: 150%">No event selected</div>
+          <h2>Evento Selecionado:</h2>
+          <div id="selectedEventInfo" style="align-items: center; text-align: center; font-size: 150%">Nenhum evento selecionado</div>
         </div>
-        
-        
       </div>
     </div>
   </div>        
   <div id="eventsModal" class="modal">
-    
     <div class="modal-content">
-
       <h3 id="modalSelectedDay">Selected Day: None</h3>
       <div id="eventsListContainer"></div>
+      <!-- Section for Previewing Selected Event -->
+      <div id="eventPreview" class="event-preview">
+        <h4>Event Preview:</h4>
+        <div id="eventPreviewContent">Nenhum evento selecionado</div>
+      </div>
       <!-- <button onclick="closeModal()">Close</button> -->
     </div>
   </div>
+  
   <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@latest/dist/svg.min.js"></script>
   <script src="js/mmi.js"></script>
   <script src="js/globals.js"></script>
@@ -258,6 +274,8 @@
     var selectedDay = new Date(2023, 11, 22);
     var selectedEvent = undefined; // This will store the selected event
     var modal_opne = false;
+    var currentEventIndex = 0;
+    var eventsArray = [];
     mmiCli_Out = new MMIClientSocket(mmiCli_Out_add + "APP");
     mmiCli_Out.onMessage.on(im1MessageHandler);
     mmiCli_Out.onOpen.on(socketOpenHandler);
@@ -311,6 +329,28 @@
       selectedDay.setFullYear(selectedDay.getFullYear() + years);
       displaySelectedDay();
     }
+
+    function selectEvent(event) {
+      selectedEvent = event;
+      updateSelectedEventDisplay();
+      updateEventPreview(event); // Update the event preview
+    }
+    
+    function updateEventPreview(event) {
+      const previewDiv = document.getElementById("eventPreviewContent");
+      if (event) {
+        // Format the event details as needed
+        previewDiv.innerHTML = `
+          <p>Title: ${event.summary}</p>
+          <p>Start: ${formatDate(new Date(event.start.date || event.start.dateTime))}</p>
+          <p>End: ${formatDate(new Date(event.end.date || event.end.dateTime))}</p>
+          <p>Description: ${event.description || 'No description'}</p>
+          <!-- Add more event details as required -->
+        `;
+      } else {
+        previewDiv.textContent = "Nenhum evento selecionado";
+      }
+    }
   
     // Function to handle the command
     function handleCommand(command) {
@@ -328,7 +368,12 @@
           addWeeks(1);
           break;
         case "PASSDR":
-          addDays(1);
+          if (modal_opne && eventsArray.length > 0) {
+            currentEventIndex = (currentEventIndex + 1) % eventsArray.length;
+            selectEvent(eventsArray[currentEventIndex]);
+          } else {
+            addDays(1);
+          }
           break;
 
         case "PASSYL":
@@ -341,7 +386,12 @@
           addWeeks(-1);
           break;
         case "PASSDL":
-          addDays(-1);
+          if (modal_opne && eventsArray.length > 0) {
+            currentEventIndex = (currentEventIndex - 1 + eventsArray.length) % eventsArray.length;
+            selectEvent(eventsArray[currentEventIndex]);
+          } else {
+            addDays(-1);
+          }
           break;
 
         case "OPENE":
@@ -388,11 +438,10 @@
       })
       .catch(error => {
         console.error("Error updating event: ", error);
-      });
-      selectedEvent = undefined;
-      updateSelectedEventDisplay();
+      })
+      selectEvent(undefined);
       updateCalendarIframe(selectedDay);
-    };
+    }
 
     function showEventsModal() {
       // Format the selected date as needed for your API call
@@ -431,11 +480,12 @@
           eventContainer.appendChild(eventDiv);
     
           // Select the first event and save it
-          if (index === 0) {
-            selectedEvent = event;
-            updateSelectedEventDisplay();
-          }
+          eventsArray.push(event);
         });
+
+        if (eventsArray.length > 0) {
+          selectEvent(eventsArray[0]);
+        }
     
         // Open the modal
         document.getElementById('eventsModal').style.display = 'block';
@@ -447,7 +497,7 @@
       if (selectedEvent) {
         eventInfoDiv.innerHTML = `Title: ${selectedEvent.summary}<br>Date: ${formatDate(new Date(selectedEvent.start.date || selectedEvent.start.dateTime))}`;
       } else {
-        eventInfoDiv.textContent = "No event selected";
+        eventInfoDiv.textContent = "Nenhum evento selecionado";
       }
     }
     
