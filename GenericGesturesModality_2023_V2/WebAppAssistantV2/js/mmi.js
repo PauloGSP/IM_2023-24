@@ -132,8 +132,6 @@ var MMIClient = (function () {
     });
     MMIClient.prototype.sendToIM = function (lce) {
 
-        console.log(lce.toString())
-
         var sender = new XMLHttpRequest();
         sender.open('POST', this.FusionAdd, true);
         var cli = this;

@@ -110,6 +110,12 @@
     .recognized{
       font-size:x-large;
     }
+    .border-pink {
+      border: 5px solid pink;
+      background-color: pink;
+      opacity: 1; /* Adjust transparency as needed */
+    }
+
     iframe {
       width: 100%;
       height: 75vh;
@@ -127,18 +133,71 @@
       margin: 5px; /* Spacing between images */
       object-fit: cover; /* This makes the image cover the area, can be adjusted */
     }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* creates 3 columns */
+      grid-auto-rows: minmax(100px, auto); /* sets the minimum size of rows */
+      gap: 0.25rem; /* space between images */
+    }
+
+    .image-item {
+      position: relative; /* allows absolute positioning within each item */
+      display: flex;
+      justify-content: center; /* centers content horizontally */
+      align-items: center; /* centers content vertically */
+      opacity: 0.9;
+    }
+
+    .image-item.large {
+      grid-column: span 3; /* makes the last image span all 3 columns */
+      justify-content: center; /* centers the large image horizontally */
+      align-items: end; /* aligns the large image at the bottom */
+    }
+
+    .image-item img {
+      max-width: 100%; /* ensures image is not larger than its container */
+      max-height: 90px; /* sets maximum height for all images */
+      width: auto; /* maintains aspect ratio */
+      height: auto; /* maintains aspect ratio */
+    }
+
+    .image-item p::after {
+      position: absolute; /* positions the caption over the image */
+      bottom: 0; /* aligns caption to the bottom */
+      width: 100%; /* ensures caption spans the width of the image */
+      text-align: center; /* centers the caption text */
+      font-size: 0.75em; /* reduces the font size of the caption */
+      color: white; /* sets the caption text color */
+      background: rgba(0, 0, 0, 0.45); /* adds a semi-transparent background to the caption */
+      padding: 5px 0; /* adds padding to the top and bottom */
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%; /* Adjust as needed */
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <h1 style="background-color: #4F5D73; margin: 0;">Assistente de Calendário</h1>
-  <button id="testButton" onclick="testMessageHandler('PASSYR')">Year Right</button>
-  <button id="testButton" onclick="testMessageHandler('PASSYL')">Year Left</button>
-  <button id="testButton" onclick="testMessageHandler('PASSMR')">Month Right</button>
-  <button id="testButton" onclick="testMessageHandler('PASSML')">Month Left</button>
-  <button id="testButton" onclick="testMessageHandler('PASSWR')">Week Right</button>
-  <button id="testButton" onclick="testMessageHandler('PASSWL')">Week Left</button>
-  <button id="testButton" onclick="testMessageHandler('PASSDR')">Day Right</button>
-  <button id="testButton" onclick="testMessageHandler('PASSDL')">Day Left</button>
+  <button id="testButton" onclick="testMessageHandler('OPENE')">Day Left</button>
   <div id="response"></div>
     <div class="top-section">
       <div class="calendar-container">
@@ -148,21 +207,44 @@
       <div id="events-container" class="events-container" >
         <div style="min-height: 10%;">
           <h2>Dia Selecionado</h2>
-          <div id="selected-day-display">2023-12-21</div>
+          <div id="selected-day-display" style="align-items: center; text-align: center; font-size: 200%">2023-12-22</div>
         </div>
         <h2>Lista de Movimentos</h2>
-        <div id="moves-list">
-          <img src="./moves/template.jpeg">
-          <img src="./moves/template.jpeg">
-          <img src="./moves/template.jpeg">
-          <img src="./moves/template.jpeg">
-          <img src="./moves/template.jpeg">
-          <img src="./moves/template.jpeg">
-          <img src="./moves/template.jpeg">
-          <img src="./moves/template.jpeg">
-          <img src="./moves/template.jpeg">
+        <div class="image-grid">
+          <!-- Images 1-9 -->
+          <div class="image-item"><img src="./moves/gif_day_right.gif" alt=""><p>Dia seguinte</p></div>
+          <div class="image-item"><img src="./moves/gif_select.gif" alt=""><p2>Selecionar</p2></div>
+          <div class="image-item"><img src="./moves/gif_day_left.gif" alt=""><p>Dia anterior</p></div>
+          <div class="image-item"><img src="./moves/gif_week_right.gif" alt=""><p>Semana seguinte</p></div>
+          <div class="image-item"><img src="./moves/gif_week_left.gif" alt=""><p>Semana anterior</p></div>
+          <div class="image-item"><img src="./moves/gif_month_right.gif" alt=""><p>Mês seguinte</p></div>
+          <div class="image-item"><img src="./moves/gif_month_left.gif" alt=""><p>Mês anterior</p></div>
+          <div class="image-item"><img src="./moves/gif_year_right.gif" alt=""><p>Ano seguinte</p></div>
+          <div class="image-item"><img src="./moves/gif_year_left.gif" alt=""><p>Ano anterior</p></div>
+
+
+          <!-- Image 10 with special class for larger size -->
+          <div class="image-item large"><img src="./moves/gif_open_event.gif" alt="">
+          </div>
+          <p></p>
+          <p style="text-align: center;">Expandir dia</p>
         </div>
+        <div id="selectedEventDetails" class="selected-event-details">
+          <h2>Selected Event:</h2>
+          <div id="selectedEventInfo" style="align-items: center; text-align: center; font-size: 150%">No event selected</div>
+        </div>
+        
+        
       </div>
+    </div>
+  </div>        
+  <div id="eventsModal" class="modal">
+    
+    <div class="modal-content">
+
+      <h3 id="modalSelectedDay">Selected Day: None</h3>
+      <div id="eventsListContainer"></div>
+      <!-- <button onclick="closeModal()">Close</button> -->
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@latest/dist/svg.min.js"></script>
@@ -173,7 +255,9 @@
   <script>
     var mmiCli_Out_add = "wss://"+host+":8005/IM/USER1/";
     var mmiCli_Out = null;
-    var selectedDay = new Date(2023, 11, 21);;
+    var selectedDay = new Date(2023, 11, 22);
+    var selectedEvent = undefined; // This will store the selected event
+    var modal_opne = false;
     mmiCli_Out = new MMIClientSocket(mmiCli_Out_add + "APP");
     mmiCli_Out.onMessage.on(im1MessageHandler);
     mmiCli_Out.onOpen.on(socketOpenHandler);
@@ -181,6 +265,25 @@
 
     function formatDate(date) {
       return date.toISOString().split('T')[0];
+    }
+
+    function updateCalendarIframe(date) {
+      // Format the date as YYYYMMDD which is required by the Google Calendar URL
+      const formattedDate = formatDateForIframe(date);
+    
+      // Construct the new URL with the date parameter
+      const newSrc = `https://calendar.google.com/calendar/embed?height=600&wkst=2&bgcolor=%239bc9fa&ctz=Europe%2FLisbon&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=bXVsdGltb2RhbGNhbGVuZGFyQGdtYWlsLmNvbQ&color=%23039BE5&dates=${formattedDate}/${formattedDate}`;
+      
+      // Update the iframe src attribute
+      document.querySelector('.calendar-container iframe').setAttribute('src', newSrc);
+    }
+    
+    function formatDateForIframe(date) {
+      // The iframe expects the date in 'YYYYMMDD' format
+      const year = date.getFullYear();
+      const month = ('0' + (date.getMonth() + 1)).slice(-2); // Add leading 0 and adjust month index
+      const day = ('0' + date.getDate()).slice(-2); // Add leading 0
+      return `${year}${month}${day}`;
     }
   
     // Function to display the selected day
@@ -211,6 +314,9 @@
   
     // Function to handle the command
     function handleCommand(command) {
+      console.log(command);
+      let month = selectedDay.getMonth();
+      let year = selectedDay.getFullYear();
       switch (command["recognized"][1]) {
         case "PASSYR":
           addYears(1);
@@ -237,8 +343,123 @@
         case "PASSDL":
           addDays(-1);
           break;
+
+        case "OPENE":
+          showEventsModal();
+          sendToVoice("Lista dos eventos do dia selecionado!");
+          break;
+
+        case "SELECT":
+          if (modal_opne == false) {
+            console.log(selectedEvent);
+            if (selectedEvent != undefined ) {
+              updateEvent();
+              sendToVoice("Evento alterado!");
+            }
+          } else {
+            closeModal();
+            if (selectedEvent != undefined ) {
+              sendToVoice("Evento selecionado!");
+            }
+          };
+          break;
+      };
+      if (selectedDay.getMonth() != month || selectedDay.getFullYear() != year) {
+        updateCalendarIframe(selectedDay);
+      }
+    };
+
+    function updateEvent() {
+      let updateData = {
+        eventId: selectedEvent.id,
+        newDate: formatDate(selectedDay) // Format date as needed by your API
+      };
+
+      // API call to update the event
+      fetch('http://localhost:4000/update_event/', {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(updateData),
+      })
+      .then(response => response.json())
+      .then(api_return => {
+        console.log("Event updated: ", api_return);
+
+      })
+      .catch(error => {
+        console.error("Error updating event: ", error);
+      });
+      selectedEvent = undefined;
+      updateSelectedEventDisplay();
+      updateCalendarIframe(selectedDay);
+    };
+
+    function showEventsModal() {
+      // Format the selected date as needed for your API call
+      let formattedDate = formatDate(selectedDay);
+      modal_opne = true;
+    
+      // Update the modal with the selected day
+      document.getElementById('modalSelectedDay').textContent = 'Selected Day: ' + formattedDate;
+    
+      // Prepare the API request body
+      console.log(selectedDay);
+      let body = {
+        "day": selectedDay.getDate(),
+        "month": selectedDay.getMonth() + 1,
+        "year": selectedDay.getFullYear()
+      };
+      console.log(body);
+    
+      // API call
+      fetch('http://localhost:4000/list_events_gestures/', {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(body),
+      })
+      .then(response => response.json())
+      .then(api_return => {
+        console.log(api_return);
+        var eventData = api_return;
+        const eventContainer = document.getElementById("eventsListContainer");
+        eventContainer.innerHTML = '';
+    
+        // Loop through the events and add them to the container
+        eventData.forEach((event, index) => {
+          const eventDiv = document.createElement("div");
+          eventDiv.textContent = event.summary;
+          eventContainer.appendChild(eventDiv);
+    
+          // Select the first event and save it
+          if (index === 0) {
+            selectedEvent = event;
+            updateSelectedEventDisplay();
+          }
+        });
+    
+        // Open the modal
+        document.getElementById('eventsModal').style.display = 'block';
+      });
+    }
+
+    function updateSelectedEventDisplay() {
+      const eventInfoDiv = document.getElementById("selectedEventInfo");
+      if (selectedEvent) {
+        eventInfoDiv.innerHTML = `Title: ${selectedEvent.summary}<br>Date: ${formatDate(new Date(selectedEvent.start.date || selectedEvent.start.dateTime))}`;
+      } else {
+        eventInfoDiv.textContent = "No event selected";
       }
     }
+    
+    // Function to close the modal
+    function closeModal() {
+      modal_opne = false;
+      var modal = document.getElementById('eventsModal');
+      if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+      }
+    }
+    
 
     function socketOpenHandler(event) {
       console.log("---------------openSocketHandler---------------")
@@ -250,21 +471,85 @@
       console.log("--------------im1MessageHandler---------------");
 
       if(data != null && data!="RENEW" && data!="OK") {
-        console.log(data);
         
 
         var content = $(data).find("emma\\:interpretation").first().text().trim();
         if (typeof content == 'string') {
           try {
-            console.log(content);
-
             let command = JSON.parse(content)
             handleCommand(command);
+            handleBorder(command);
 
           } catch (e) { console.log(e); }
         }
       }
     }
+
+    function handleBorder(command) {
+      // ... other cases ...
+
+      // Remove pink border from all images
+      document.querySelectorAll('.image-item img').forEach(img => {
+        img.classList.remove('border-pink');
+      });
+
+      // Apply pink border to the correct image
+      let imageToHighlight;
+      switch (command["recognized"][1]) {
+        case "PASSDR":
+          // If gesture is 'Day Right', highlight the image for 'Dia seguinte'
+          imageToHighlight = document.querySelector('img[src$="gif_day_right.gif"]');
+           
+          
+          break;
+        case "PASSDL":
+          // If gesture is 'Day Left', highlight the image for 'Dia anterior'
+          imageToHighlight = document.querySelector('img[src$="gif_day_left.gif"]');
+          break;
+        case "PASSWL":
+          // If gesture is 'Week Left', highlight the image for 'Dia anterior'
+          imageToHighlight = document.querySelector('img[src$="gif_week_left.gif"]');
+          break;
+        case "PASSWR":
+          // If gesture is 'Week Right', highlight the image for 'Dia seguinte'
+          imageToHighlight = document.querySelector('img[src$="gif_week_right.gif"]');
+          break;
+        case "PASSYL":
+          // If gesture is 'Year Left', highlight the image for 'Dia anterior'
+          imageToHighlight = document.querySelector('img[src$="gif_year_left.gif"]');
+          break;
+        case "PASSYR":
+          // If gesture is 'Year Right', highlight the image for 'Dia seguinte'
+          imageToHighlight = document.querySelector('img[src$="gif_year_right.gif"]');
+          break;
+
+        case "PASSML":
+          // If gesture is 'Month Left', highlight the image for 'Mês anterior'
+          imageToHighlight = document.querySelector('img[src$="gif_month_left.gif"]');
+          break;
+        case "PASSMR":
+          // If gesture is 'Month Right', highlight the image for 'Mês seguinte'
+          imageToHighlight = document.querySelector('img[src$="gif_month_right.gif"]');
+          break;
+        case "OPENE":
+          // If gesture is 'Open', highlight the image for 'Expandir dia'
+          imageToHighlight = document.querySelector('img[src$="gif_open_event.gif"]');
+          break;
+        case "SELECT":
+          // If gesture is 'Select', highlight the image for 'Selecionar'
+          imageToHighlight = document.querySelector('img[src$="gif_select.gif"]');
+          break;
+      }
+      sendToVoice(imageToHighlight.parentNode.querySelector('p').textContent);
+
+      // If an image to highlight is identified, add the pink border class
+      if (imageToHighlight) {
+        imageToHighlight.classList.add('border-pink');
+      }
+
+      // ... other logic ...
+    }
+
 
     ///// Voice part untouched for now
 

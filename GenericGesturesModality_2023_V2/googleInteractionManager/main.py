@@ -475,3 +475,77 @@ async def provide_date(date: dict):
         result_day = (result_day + timedelta(days=365)).replace(day=result_day.day, month=result_day.month)
 
     return str(result_day)[0:10]
+
+
+@app.post("/list_events_gestures/")
+async def list_events_gestures(date: dict):
+
+    print(date)
+
+    creds = getCredentials()
+
+    month = f"{date['month']}".zfill(2)
+    day = f"{date['day']}".zfill(2)
+
+    dateIsoFormat = f"{date['year']}-{month}-{day}"
+    print(date)
+
+    try:
+        service = build("calendar", "v3", credentials=creds)
+        events_result = (
+            service.events()
+            .list(
+                calendarId="primary",
+                singleEvents=True,
+                orderBy="startTime",
+            )
+            .execute()
+        )
+        events = events_result.get("items", [])
+
+        if not events:
+            print("No events found.")
+            return []
+
+        event_of_date = []
+
+        for e in events:
+            print(e["start"])
+            try:
+                if dateIsoFormat in e["start"]["dateTime"]:
+                    event_of_date.append(e)
+            except:
+                if dateIsoFormat in e["start"]["date"]:
+                    event_of_date.append(e)
+
+        print(event_of_date)
+
+        return event_of_date
+
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+
+
+@app.post("/update_event/")
+async def update_event(event_data: dict):
+
+    creds = getCredentials()
+    event_id = event_data["eventId"]
+    new_date = event_data["newDate"]
+
+    try:
+        service = build("calendar", "v3", credentials=creds)
+
+        # Retrieve the event from the calendar
+        event = service.events().get(calendarId='primary', eventId=event_id).execute()
+
+        # Update the date of the event
+        event['start'] = {'date': new_date}
+        event['end'] = {'date': new_date}  # Adjust if the end date is different
+
+        updated_event = service.events().update(calendarId='primary', eventId=event_id, body=event).execute()
+
+        return {"status": "success", "updated_event": updated_event}
+
+    except HttpError as error:
+        print(f"An error occurred: {error}")
