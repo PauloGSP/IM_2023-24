@@ -131,6 +131,14 @@
 </head>
 <body>
   <h1 style="background-color: #4F5D73; margin: 0;">Assistente de Calendário</h1>
+  <button id="testButton" onclick="testMessageHandler('PASSYR')">Year Right</button>
+  <button id="testButton" onclick="testMessageHandler('PASSYL')">Year Left</button>
+  <button id="testButton" onclick="testMessageHandler('PASSMR')">Month Right</button>
+  <button id="testButton" onclick="testMessageHandler('PASSML')">Month Left</button>
+  <button id="testButton" onclick="testMessageHandler('PASSWR')">Week Right</button>
+  <button id="testButton" onclick="testMessageHandler('PASSWL')">Week Left</button>
+  <button id="testButton" onclick="testMessageHandler('PASSDR')">Day Right</button>
+  <button id="testButton" onclick="testMessageHandler('PASSDL')">Day Left</button>
   <div id="response"></div>
     <div class="top-section">
       <div class="calendar-container">
@@ -140,7 +148,7 @@
       <div id="events-container" class="events-container" >
         <div style="min-height: 10%;">
           <h2>Dia Selecionado</h2>
-          <div id="selected-day-display">None</div>
+          <div id="selected-day-display">2023-12-21</div>
         </div>
         <h2>Lista de Movimentos</h2>
         <div id="moves-list">
@@ -162,14 +170,75 @@
   <script src="js/globals.js"></script>
   <script src="js/jquery-3.6.4.min.js"></script>
   <script src="js/webtoolkit.utf8.js"></script>
-  <script type="module">
+  <script>
     var mmiCli_Out_add = "wss://"+host+":8005/IM/USER1/";
     var mmiCli_Out = null;
-    var selectedDay = "2023-12-21";
+    var selectedDay = new Date(2023, 11, 21);;
     mmiCli_Out = new MMIClientSocket(mmiCli_Out_add + "APP");
     mmiCli_Out.onMessage.on(im1MessageHandler);
     mmiCli_Out.onOpen.on(socketOpenHandler);
     mmiCli_Out.openSocket();
+
+    function formatDate(date) {
+      return date.toISOString().split('T')[0];
+    }
+  
+    // Function to display the selected day
+    function displaySelectedDay() {
+      const el = document.getElementById('selected-day-display');
+      el.textContent = `${formatDate(selectedDay)}`;
+    }
+  
+    // Functions to update the selected day
+    function addDays(days) {
+      selectedDay.setDate(selectedDay.getDate() + days);
+      displaySelectedDay();
+    }
+  
+    function addWeeks(weeks) {
+      addDays(weeks * 7);
+    }
+  
+    function addMonths(months) {
+      selectedDay.setMonth(selectedDay.getMonth() + months);
+      displaySelectedDay();
+    }
+  
+    function addYears(years) {
+      selectedDay.setFullYear(selectedDay.getFullYear() + years);
+      displaySelectedDay();
+    }
+  
+    // Function to handle the command
+    function handleCommand(command) {
+      switch (command["recognized"][1]) {
+        case "PASSYR":
+          addYears(1);
+          break;
+        case "PASSMR":
+          addMonths(1);
+          break;
+        case "PASSWR":
+          addWeeks(1);
+          break;
+        case "PASSDR":
+          addDays(1);
+          break;
+
+        case "PASSYL":
+          addYears(-1);
+          break;
+        case "PASSML":
+          addMonths(-1);
+          break;
+        case "PASSWL":
+          addWeeks(-1);
+          break;
+        case "PASSDL":
+          addDays(-1);
+          break;
+      }
+    }
 
     function socketOpenHandler(event) {
       console.log("---------------openSocketHandler---------------")
@@ -182,34 +251,19 @@
 
       if(data != null && data!="RENEW" && data!="OK") {
         console.log(data);
+        
+
         var content = $(data).find("emma\\:interpretation").first().text().trim();
         if (typeof content == 'string') {
           try {
-            // Try to parse XML
             console.log(content);
 
-            //$("#response").html(content);
-            //$("#response").addClass("container");
-            //$("#response").addClass("responseText");
+            let command = JSON.parse(content)
+            handleCommand(command);
 
-            let c = JSON.parse(content)
-
-            selectedDay = "AAAA";
-
-            /*setTimeout(function(){\
-              $("#response").html("");
-              $("#response").removeClass("container");
-              $("#response").removeClass("responseText");
-            }, 3000);
-            */
           } catch (e) { console.log(e); }
         }
       }
-    }
-
-    function displaySelectedDay() {
-      const el = document.getElementById('selected-day-display');
-      el.textContent = `${selectedDay}`;
     }
 
     ///// Voice part untouched for now
@@ -224,18 +278,40 @@
         doStartRequest(new EMMA("text-", "text", "command", 1, 0).
         setValue(JSON.stringify(result))));
     }
+
+    displaySelectedDay();
   </script>
   <script>
-    let selectedDay = "2023-12-21"; // Default or fetched value
     function updateSelectedDay(year, month, day) {
       selectedDay = `${year}-${month}-${day}`;
       displaySelectedDay();
     }
-    function displaySelectedDay() {
-      const el = document.getElementById('selected-day-display');
-      el.textContent = `${selectedDay}`;
+  </script>
+  <script>
+    function createXmlDocument(xmlString) {
+      var parser = new DOMParser();
+      var xmlDoc = parser.parseFromString(xmlString, "text/xml");
+      return xmlDoc;
     }
-    displaySelectedDay();
+
+    function testMessageHandler(string) {
+      // XML string with the structure you provided
+      var xmlDataString = `
+      <mmi:mmi xmlns:mmi="http://www.w3.org/2008/04/mmi-arch" mmi:Version="1.0">
+        <mmi:ExtensionNotification mmi:context="gestures-ctx-1" mmi:requestId="gestures-id-3" mmi:source="GESTURES" mmi:target="FUSION">
+          <mmi:data>
+            <emma:emma xmlns:emma="http://www.w3.org/2003/04/emma" emma:Version="1.0">
+              <emma:interpretation emma:confidence="1" emma:end="" emma:id="gestures-1" emma:medium="gestures" emma:mode="command" emma:start="">
+                <command>{ "recognized": ["GESTURES", "${string}"], "confidence": "0.726459145545959"  }</command>
+              </emma:interpretation>
+            </emma:emma>
+          </mmi:data>
+        </mmi:ExtensionNotification>
+      </mmi:mmi>`;
+
+      // Call the im1MessageHandler with the XML document
+      im1MessageHandler(createXmlDocument(xmlDataString));
+    }
   </script>
 </body>
 </html>
