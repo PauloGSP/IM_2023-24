@@ -1,24 +1,50 @@
 version: "3.1"
 nlu:
+
+  #
+  # REGEXS
+  #
+
+- regex: day
+  examples: |
+    - \b(0?[1-9]|[12][0-9]|3[01])\b
+
+- regex: month
+  examples: |
+    - \b(Janeiro|Fevereiro|Março|Abril|Maio|Junho|Julho|Agosto|Setembro|Outubro|Novembro|Dezembro)\b
+    - \b(1-31)\b
+- regex: year
+  examples: |
+    - \b(19|20)\d{2}\b
+
+  #
+  # INTENTS
+  #
+
+  # Greetings
+
 - intent: greet
   examples: |
-    - Oi Assistente
-    - Bom dia, Assistente
-    - Boa tarde, Assistente
-    - Boa noite, Assistente
-    - Olá Assistente
-    - Olá assistente
+    - Oi Calendário
+    - Bom dia, Calendário
+    - Boa tarde, Calendário
+    - Boa noite, Calendário
+    - Olá Calendário
+    - Olá calendário
     - olá
-    - olá assistente
-    - olá assistnete
+    - olá calendário
+    - olá calendário
+
+  # Goodbye
     
 - intent: goodbye
   examples: |
-    - Xau, Assistente
-    - Adeus, Assistente
-    - Até logo, Assistente
-    - Boa noite, Assistente
-    - Até amanhã, Assistente
+    - Xau, Calendário
+    - Adeus, Calendário
+    - Até logo, Calendário
+    - Até amanhã, Calendário
+
+  # Afirmation
 
 - intent: affirm
   examples: |
@@ -30,6 +56,8 @@ nlu:
     - Ok
     - sim
 
+  # Denial
+
 - intent: deny
   examples: |
     - Não
@@ -39,35 +67,135 @@ nlu:
     - Não gosto assim
     - Nem por isso
 
-- intent: light_switch
-  examples: |
-    - [Liga](switch) a luz da [sala](place), por favor
-    - Podes [ligar](switch) a luz da [cozinha](place)?
-    - Podes [desligar](switch) a luz do [quarto](place)?
-    - [Acende-me](switch) a luz da [entrada](place)
-    - [Apaga](switch) a luz do espelho(place)
-    - Podes [acender](switch) a luz da [casa de banho](place)?
-    - Podes [apagar](switch) a luz da [dispensa](place)?
-    - Podes [desligar](switch) a luz do [quarto e da casa de banho](place)?
-    - [Liga](switch) a luz da [sala](place)
-    - [Liga](switch) a luz do [quarto](place)
-    - [Desliga](switch) a luz do [quarto](place)
+  # List all the events in the callendar
 
-- intent: change_color
+- intent: list_all_events
   examples: |
-    - Mudar a cor do [quadrado](shape) para  [verde](color)
-    - Mudar o [retangulo](shape) para  [vermelho](color)
-    - Alterar a cor do [circulo](shape) para  [amarelo](color)
-    - Mudar a cor do [quadrado](shape) para  [azul](color)
-    - Alterar o [circulo](shape) para  [verde](color)
-    - Mudar a cor do [triangulo](shape) para  [vermelho](color)
-    - Por o [circulo](shape) em  [amarelo](color)
-    - Mudar para [azul](color) o [triangulo](shape) 
-    - Alterar para [amarelo](color) o [quadrado](shape)
-    - Alterar o [circulo](shape) para  [castanho](color)
-    - Mudar o [quadrado](shape) para  [cinzento](color)
-    - Alterar o [triangulo](shape) para  [laranja](color)
-    - Por a cor do [circulo](shape) em  [rosa](color)
-    - Mudar a cor do [triangulo](shape) para  [preto](color)
-    - Por o [circulo](shape) em  [branco](color)
-    - Mudar para [azul](color) o [circulo](shape) 
+    - Lista os eventos.
+    - Lista todos os eventos.
+    - Lista os eventos, por favor.
+    - Podes listar todos os eventos, por favor?
+    - Que eventos tenho?
+    - Preciso de saber os meus eventos.
+    - Quero saber os meus eventos.
+
+  # List all the events of a given day
+
+- intent: list_all_events_of_a_day
+  examples: |
+    - Lista os eventos de [10](day) de [Janeiro](month) de [2020](year).
+    - Que eventos tenho marcados para [7](day) do [10](month) de [2005](year)?
+    - Quais são os meus eventos de [25](day) de [Abril](month) de [1973](year)?
+    - Lista os eventos de [1](day) do [1](month) de [2021](year)?
+    - Diz me os eventos do dia [17](day) de [Fevereiro](month) de [2000](year).
+    - Podes listar todos os eventos de [11](day) do [8](month) de [2001](year)?
+    - Quero saber os eventos de dia [31](day) de [Dezembro](month) de [2010](year).
+
+  # List all the events of a given day
+
+- intent: list_all_events_of_a_date
+  examples: |
+    - Lista os eventos de [amanhã](date).
+    - Que eventos tenho marcados para [hoje](date)?
+    - Quais são os meus eventos de [a próxima semana](date)?
+    - Lista os eventos [deste mês](date)?
+    - Diz me os eventos do [próximo mês](date).
+    - Podes listar todos os eventos [deste ano](date)?
+    - Quero saber os eventos [desta semana](date).
+
+  # List all the events of a given color tag
+
+- intent: list_all_events_of_a_color_tag
+  examples: |
+    - Lista os eventos com a tag [lavanda](color_tag).
+    - Mostra-me todos os eventos assoaciados à cor [banana](color_tag).
+    - Quero todos os eventos com a tag [mirtilo](color_tag).
+    - Que eventos têm a tag [manjericão](color_tag)?
+    - Quais sãos os eventos agrupados a [vapão](color_tag)
+    - Podes listar os eventos de tag [tomate](color_tag)?
+
+  # Search/Describe an event given its name
+
+- intent: list_an_event_by_title
+  examples: |
+    - Procura pelo evento [consulta no médico](title).
+    - Procura pelo evento com o título [conferência google](title).
+    - Há algum evento de nome [ir ao café](title)?
+    - Encontra o evento [reunião de trabalho](title).
+    - Encontra o evento de título [trabalho](title).
+    - Quero ver o evento [encontro de amigos](title).
+    - Quero que me dês o evento chamado [entrega do trabalho](title).
+
+  # # FORMS
+  # Create a new event in the calendar
+
+- intent: create_event
+  examples: |
+    - Quero criar um novo evento.
+    - Criar um novo evento.
+    - Adicionar um evento ao meu calendário.
+    - Gostaria de marcar um novo compromisso.
+    - Vamos marcar um novo evento no calendário.
+
+- intent: update_event
+  examples: |
+    - Preciso de mudar um evento um evento.
+    - Editar um evento no meu calendário.
+    - Gostaria de alterar um compromisso.
+    - Editar um evento.
+    - Update um evento existente.
+
+- intent: provide_title
+  examples: |
+    - Mete no título [Consulta no Dentista](title).
+    - Nomeia o evento de [Reunião do Projeto](title).
+    - O título deve ser [ ](title).
+    - Chama o evento de [Aula de Ioga](title).
+
+- intent: provide_event_day
+  examples: |
+    - Mete a data de dia [13](day) de [k](month) de [2023](year).
+    - Quero que marques para o dia [3](day) de [Julho](month) de [2025](year).
+    - Marca o evento para o dia [5](day) de [Junho](month) de [2040](year).
+    - Agenda para o dia [20](day) de [Dezembro](month) de [2080](year).
+    - O evento será no dia [16](day) de [Outubro](month) de [2050](year).
+
+- intent: provide_event_date
+  examples: |
+    - Mete a data de [hoje](date)
+    - Será [daqui a 3 dias](date)
+    - Marca o evento para [amanhã](date)
+    - Agende para o [próximo sábado](date)
+    - A consulta é na [próxima semana](date)
+    - O evento será [daqui a um mês](date)
+
+- intent: provide_time
+  examples: |
+    - Começa às [10 e 30](time).
+    - O horário deve ser [14:30](time).
+    - Defina o horário para as [17 horas](time).
+    - Preciso que seja às [20 horas](time).
+    - Inicie o evento às [7 da manhã](time).
+
+- intent: provide_color_tag
+  examples: |
+    - Usa a cor [azul](color_tag).
+    - Utiliza a cor [vermelho](color_tag).
+    - Quero a cor [amarelo](color_tag).
+    - Cor [verde](color_tag).
+
+- intent: submit_event
+  examples: |
+    - Submete o evento.
+    - Adicionar o evento.
+    - Criar o evento.
+    - Feito.
+    - Evento conluído.
+
+- intent: cancel_event
+  examples: |
+    - Cancela o evento.
+    - Voltar para o calendário.
+    - Cancelar.
+    - Voltar.
+    - Sair.
