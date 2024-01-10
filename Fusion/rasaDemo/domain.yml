@@ -2,9 +2,7 @@ version: '3.1'
 
 intents:
   - affirm
-  - deny
   - greet
-  - goodbye
   - list_all_events
   - list_all_events_of_a_day
   - list_all_events_of_a_date

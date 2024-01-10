@@ -30,10 +30,11 @@ nlu:
     - Boa tarde, Calendário
     - Boa noite, Calendário
     - Olá Calendário
-    - Olá calendário
-    - olá
-    - olá calendário
-    - olá calendário
+    - Saudações, Calendário
+    - Como estás, Calendário?
+    - Boas, Calendário
+    - E aí, Calendário
+    - Viva, Calendário
 
   # Goodbye
     
@@ -43,29 +44,10 @@ nlu:
     - Adeus, Calendário
     - Até logo, Calendário
     - Até amanhã, Calendário
-
-  # Afirmation
-
-- intent: affirm
-  examples: |
-    - Sim
-    - Claro
-    - Parece-me bem
-    - Correto
-    - Okay
-    - Ok
-    - sim
-
-  # Denial
-
-- intent: deny
-  examples: |
-    - Não
-    - Nope
-    - Nunca
-    - Acho que não
-    - Não gosto assim
-    - Nem por isso
+    - Até breve, Calendário
+    - Tchau, Calendário
+    - Até a próxima, Calendário
+    - Até mais, Calendário
 
   # List all the events in the callendar
 
@@ -78,6 +60,11 @@ nlu:
     - Que eventos tenho?
     - Preciso de saber os meus eventos.
     - Quero saber os meus eventos.
+    - Mostra-me os eventos agendados.
+    - Quais eventos estão programados?
+    - Pode mostrar todos os eventos?
+    - Quais são os eventos na agenda?
+    - Gostaria de ver todos os eventos.
 
   # List all the events of a given day
 
@@ -90,6 +77,11 @@ nlu:
     - Diz me os eventos do dia [17](day) de [Fevereiro](month) de [2000](year).
     - Podes listar todos os eventos de [11](day) do [8](month) de [2001](year)?
     - Quero saber os eventos de dia [31](day) de [Dezembro](month) de [2010](year).
+    - Mostra os eventos do dia [28](day) de [Setembro](month) de [2022](year).
+    - Quero ver os eventos de [15](day) de [Maio](month) de [2019](year).
+    - Eventos do dia [21](day) de [Junho](month) de [2023](year)?
+    - Quais são os eventos para o dia [8](day) de [Novembro](month) de [2024](year)?
+    - Mostra os eventos para [2](day) de [Março](month) de [2025](year).
 
   # List all the events of a given day
 
@@ -99,9 +91,14 @@ nlu:
     - Que eventos tenho marcados para [hoje](date)?
     - Quais são os meus eventos de [a próxima semana](date)?
     - Lista os eventos [deste mês](date)?
-    - Diz me os eventos do [próximo mês](date).
+    - Diz me os eventos do [mês anterior](date).
     - Podes listar todos os eventos [deste ano](date)?
     - Quero saber os eventos [desta semana](date).
+    - Quais eventos tenho para [depois de amanhã](date)?
+    - Mostra os eventos para o [próximo mês](date)?
+    - Que eventos estão marcados para a [próxima semana](date)?
+    - Eventos para o final [deste mês](date)?
+    - Mostra os eventos [daqui a dois meses](date).
 
   # List all the events of a given color tag
 
@@ -113,6 +110,11 @@ nlu:
     - Que eventos têm a tag [manjericão](color_tag)?
     - Quais sãos os eventos agrupados a [vapão](color_tag)
     - Podes listar os eventos de tag [tomate](color_tag)?
+    - Quais eventos têm a cor [céu](color_tag)?
+    - Mostra-me eventos com a tag [coral](color_tag).
+    - Eventos com a tag [cinzento](color_tag)?
+    - Quero ver eventos na cor [turquesa](color_tag).
+    - Eventos marcados com a tag [rosa](color_tag)?
 
   # Search/Describe an event given its name
 
@@ -125,6 +127,11 @@ nlu:
     - Encontra o evento de título [trabalho](title).
     - Quero ver o evento [encontro de amigos](title).
     - Quero que me dês o evento chamado [entrega do trabalho](title).
+    - Procura o evento chamado [jantar de família](title).
+    - Evento [passeio no parque](title)?
+    - Achar o evento com o título [sessão de cinema](title).
+    - Procura por [encontro de negócios](title).
+    - Localizar o evento [aniversário da Maria](title).
 
   # # FORMS
   # Create a new event in the calendar
@@ -136,6 +143,11 @@ nlu:
     - Adicionar um evento ao meu calendário.
     - Gostaria de marcar um novo compromisso.
     - Vamos marcar um novo evento no calendário.
+    - Adicionar novo evento no calendário.
+    - Quero agendar um evento.
+    - Vamos colocar um evento na agenda.
+    - Marcar um evento no meu calendário.
+    - Criar um compromisso no calendário.
 
 - intent: update_event
   examples: |
@@ -144,30 +156,48 @@ nlu:
     - Gostaria de alterar um compromisso.
     - Editar um evento.
     - Update um evento existente.
+    - Modificar um evento existente.
+    - Alterar detalhes de um evento.
+    - Mudar a data de um evento.
+    - Quero atualizar um evento.
+    - Editar as informações de um evento.
 
 - intent: provide_title
-  examples: |
+  examples: | 
     - Mete no título [Consulta no Dentista](title).
     - Nomeia o evento de [Reunião do Projeto](title).
-    - O título deve ser [ ](title).
+    - O título deve ser [Ir à Escola](title).
     - Chama o evento de [Aula de Ioga](title).
+    - O evento se chamará [Almoço de Negócios](title).
+    - Titula o evento como [Sessão de Estudo](title).
+    - Definir o nome do evento como [Piquenique](title).
+    - Título do evento será [Viagem a Lisboa](title).
 
 - intent: provide_event_day
   examples: |
-    - Mete a data de dia [13](day) de [k](month) de [2023](year).
+    - Mete a data de dia [13](day) de [Outubro](month) de [2023](year).
+    - Mudar a data do evento para [15](day) de [Novembro](month) de [2024](year).
     - Quero que marques para o dia [3](day) de [Julho](month) de [2025](year).
     - Marca o evento para o dia [5](day) de [Junho](month) de [2040](year).
     - Agenda para o dia [20](day) de [Dezembro](month) de [2080](year).
     - O evento será no dia [16](day) de [Outubro](month) de [2050](year).
+    - Agendar para [17](day) de [Agosto](month) de [2027](year).
+    - Marca para [22](day) de [Fevereiro](month) de [2026](year).
+    - Definir para o dia [11](day) de [Março](month) de [2028](year).
+    - Coloca no dia [30](day) de [Abril](month) de [2030](year).
 
 - intent: provide_event_date
   examples: |
-    - Mete a data de [hoje](date)
-    - Será [daqui a 3 dias](date)
-    - Marca o evento para [amanhã](date)
-    - Agende para o [próximo sábado](date)
-    - A consulta é na [próxima semana](date)
-    - O evento será [daqui a um mês](date)
+    - Mete a data de [hoje](date).
+    - Mudar a data do evento para a [próxima semana](date).
+    - Será [daqui a 3 dias](date).
+    - Marca o evento para [amanhã](date).
+    - Agende para o [próximo sábado](date).
+    - A consulta é na [próxima semana](date).
+    - O evento será [daqui a um mês](date).
+    - Marca para a [semana seguinte](date).
+    - O evento será [daqui a dois dias](date).
+    - Define a data para [daqui a duas semanas](date).
 
 - intent: provide_time
   examples: |
@@ -176,6 +206,10 @@ nlu:
     - Defina o horário para as [17 horas](time).
     - Preciso que seja às [20 horas](time).
     - Inicie o evento às [7 da manhã](time).
+    - O evento começa às [11 e 15](time).
+    - Definir para as [9 horas e meia](time).
+    - Horário do evento às [16:45](time).
+    - Evento marcado para as [18 e 15](time).
 
 - intent: provide_color_tag
   examples: |
@@ -183,6 +217,10 @@ nlu:
     - Utiliza a cor [vermelho](color_tag).
     - Quero a cor [amarelo](color_tag).
     - Cor [verde](color_tag).
+    - Marcar com a cor [laranja](color_tag).
+    - Escolher a tag [ciano](color_tag).
+    - A cor do evento será [roxo](color_tag).
+    - Definir tag [marrom](color_tag).
 
 - intent: submit_event
   examples: |
@@ -191,6 +229,11 @@ nlu:
     - Criar o evento.
     - Feito.
     - Evento conluído.
+    - Confirma o evento.
+    - Concluir a criação do evento.
+    - Finalizar o evento.
+    - Confirmar adição do evento.
+    - Evento pronto.
 
 - intent: cancel_event
   examples: |
@@ -199,3 +242,8 @@ nlu:
     - Cancelar.
     - Voltar.
     - Sair.
+    - Desistir de criar o evento.
+    - Não quero mais adicionar o evento.
+    - Cancelar a criação do evento.
+    - Parar de editar o evento.
+    - Desfazer as alterações.
