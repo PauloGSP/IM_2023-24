@@ -188,24 +188,8 @@
 
 /////
 
-  var mmiCli_1 = null;
-  mmiCli_1 = new MMIClient(null, "https://"+host+":8001/IM/USER1/TOUCH");
-	
-
-   circle.on('click', function(){
-      console.log("circulo");
-      sendtouch("circulo");
-  })
-
-  square.on('click', function(){
-      console.log("quadrado");
-      sendtouch("quadrado");
-  })
-
-  triangle.on('click', function(){
-      console.log("triangulo");
-      sendtouch("triangulo");
-  })
+var mmiCli_1 = null;
+mmiCli_1 = new MMIClient(null, "https://"+host+":8001/IM/USER1/TOUCH");
 
 function sendtouch(shape){
 		var result = { "recognized" : ["TOUCH", "SHAPE", shape.toUpperCase()], "text": "" };

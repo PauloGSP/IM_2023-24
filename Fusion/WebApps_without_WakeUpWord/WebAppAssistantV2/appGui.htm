@@ -1,251 +1,646 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>CASA VIVA + APPGUI</title>
+<head>
+  <meta charset="utf-8">
+  <title>Calendário</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4F5D73;
+      --secondary-color: #f0f0f0;
+      --text-color: #333;
+      --background-color: #fff;
+    }
+    h1 {
+      background-color: var(--primary-color);
+      color: var(--background-color);
+      margin: 0;
+      padding: 10px;
+      text-align: center;
+    }
+    h2 {
+      font-size: 1.5rem;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      .top-section {
+        flex-direction: column;
+      }
+      .calendar-container,
+      .events-container {
+        flex: 0 0 auto;
+      }
+      
+      iframe {
+        height: 50vh;
+      }
+    }
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto; /* 15% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%; /* Could be more or less, depending on screen size */
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: #fff;
+    }
+    .top-section {
+      display: flex;
+      flex: 1;
+      padding-top: 5px; /* Adjust based on your actual header's height */
+    }
+    .calendar-container {
+      flex: 0 0 70%;
+      overflow-y: auto;
+      margin: 0 auto;
+    }
+    .events-container {
+      flex: 1; /* Adjust the flex property for the events container */
+      overflow-y: auto;
+    }
+    #events-list{
+      text-align: center;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .mic{
+      width: 150px;
+    }
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      border-radius: 10px;
+      background-color: #f0f0f0;
+    }
+    .responseText{
+      border: solid 2px #8ea7cf;
+      margin: 2%;
+      color: #41683a;
+    }
+    .bottomNav{
+      position: absolute;
+      bottom: 2%;
+      width: 95%;
+    }
+    .recognized{
+      font-size:x-large;
+    }
+    .border-pink {
+      border: 5px solid pink;
+      background-color: pink;
+      opacity: 1; /* Adjust transparency as needed */
+    }
 
+    iframe {
+      width: 100%;
+      height: 75vh;
+      border: none;
+      border-radius: 9px;
+    }
+    #moves-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around; /* Adjust as needed for spacing */
+    }
+    #moves-list img {
+      width: calc(33.33% - 10px); /* Adjust the subtraction value for spacing */
+      height: auto; /* Keeps the aspect ratio of the image */
+      margin: 5px; /* Spacing between images */
+      object-fit: cover; /* This makes the image cover the area, can be adjusted */
+    }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* creates 3 columns */
+      grid-auto-rows: minmax(100px, auto); /* sets the minimum size of rows */
+      gap: 0.25rem; /* space between images */
+    }
+
+    .image-item {
+      position: relative; /* allows absolute positioning within each item */
+      display: flex;
+      justify-content: center; /* centers content horizontally */
+      align-items: center; /* centers content vertically */
+      opacity: 0.9;
+    }
+
+    .image-item.large {
+      grid-column: span 3; /* makes the last image span all 3 columns */
+      justify-content: center; /* centers the large image horizontally */
+      align-items: end; /* aligns the large image at the bottom */
+    }
+
+    .image-item img {
+      max-width: 100%; /* ensures image is not larger than its container */
+      max-height: 90px; /* sets maximum height for all images */
+      width: auto; /* maintains aspect ratio */
+      height: auto; /* maintains aspect ratio */
+    }
+
+    .image-item p::after {
+      position: absolute; /* positions the caption over the image */
+      bottom: 0; /* aligns caption to the bottom */
+      width: 100%; /* ensures caption spans the width of the image */
+      text-align: center; /* centers the caption text */
+      font-size: 0.75em; /* reduces the font size of the caption */
+      color: white; /* sets the caption text color */
+      background: rgba(0, 0, 0, 0.45); /* adds a semi-transparent background to the caption */
+      padding: 5px 0; /* adds padding to the top and bottom */
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%; /* Adjust as needed */
+      text-align: center;
+    }
+
+    .event-preview {
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+    }
     
-    <style>
-      body {
-        --indicator-color: black;
-        background: #fff; /*radial-gradient(#fff 75%, var(--indicator-color));*/
-        min-height: 100vh;
-        color: burlywood;
-        font-family: Poppins;
-        margin: 0;
-        padding: 0;
-      }
-      .mic{
-        width: 150px;
-      }
-      .container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        border-radius: 10px;
-        background-color: #f0f0f0;
-      }
-
-      .responseText{
-        border: solid 2px #8ea7cf;
-        margin: 2%;
-        color: #41683a;
-      }
-
-      .bottomNav{
-        
-        position: absolute;
-        bottom: 2%;
-        width: 95%;
-      }
-      .recognized{
-        font-size:x-large;
-      }
-
-    </style>
-  </head>
-  <body>
-    <h1 style="background-color: #4F5D73; margin: 0;">CASA VIVA + APP GUI</h1>
-
-
-
-    <div id="response" class=""  style="">d</div>
+    .event-preview h4 {
+      margin-bottom: 10px;
+    }
     
-    <div style="width: 500px;">
+    #eventPreviewContent p {
+      margin: 5px 0;
+    }
 
-    
-    <svg class="a" id="a" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-    viewBox="0 0 320 100" style="enable-background:new 0 0 320 100;" xml:space="preserve">
-      <polygon points="50, 0, 0,100,100,100" class="triangle"  />
-      <rect x="110"  width="100" height="100" class="square"/>
-      <circle cx="270" cy="50" r="50" class="circle" />
-    </svg>
+    .buttons-container {
+      text-align: center; /* Center the buttons */
+      white-space: nowrap; /* Prevent wrapping to a new line */
+    }
+
+    .buttons-container button {
+      display: inline-block; /* Display buttons inline */
+      margin-right: 10px; /* Space between buttons */
+    }
+
+  </style>
+</head>
+<body>
+  <h1 style="background-color: #4F5D73; margin: 0;">Assistente de Calendário</h1>
+  <div class="buttons-container">Buttons de Voz
+    <button class="inline-button" id="testButton1" onclick="testMessageHandler('PASSDL')">Day Left</button>
+    <button class="inline-button" id="testButton2" onclick="testMessageHandler('PASSDL')">Day Left</button>
+    <button class="inline-button" id="testButton3" onclick="testMessageHandler('PASSDL')">Day Left</button>
+    <button class="inline-button" id="testButton4" onclick="testMessageHandler('PASSDL')">Day Left</button>
+    <button class="inline-button" id="testButton5" onclick="testMessageHandler('PASSDL')">Day Left</button>
+    <button class="inline-button" id="testButton6" onclick="testMessageHandler('PASSDL')">Day Left</button>
+    <button class="inline-button" id="testButton7" onclick="testMessageHandler('PASSDL')">Day Left</button>
   </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@latest/dist/svg.min.js"></script>
-    <script src="js/mmi.js"></script>
-    <script src="js/globals.js"></script>
-    <script src="js/jquery-3.6.4.min.js"></script>
-    <script src="js/webtoolkit.utf8.js"></script>
-
-
-
-<script type="module">
-
-
-  var mmiCli_Out_add = "wss://"+host+":8005/IM/USER1/";
-  var mmiCli_Out = null;
-  mmiCli_Out = new MMIClientSocket(mmiCli_Out_add + "APP");
-  mmiCli_Out.onMessage.on(im1MessageHandler);
-  mmiCli_Out.onOpen.on(socketOpenHandler);
-	mmiCli_Out.openSocket();
-
-
-  function socketOpenHandler(event) {
-    console.log("---------------openSocketHandler---------------")
-
-    if(mmiCli_Out.socket.readyState !== WebSocket.OPEN)
-    {
-        return;
-    }
-  }
-
+  <div class="buttons-container">Buttons de Gestos
+    <button class="inline-button" id="testButton1" onclick="testMessageHandler('PASSDL')">Day Left</button>
+    <button class="inline-button" id="testButton2" onclick="testMessageHandler('PASSDR')">Day Right</button>
+    <button class="inline-button" id="testButton3" onclick="testMessageHandler('PASSWL')">Week Left</button>
+    <button class="inline-button" id="testButton4" onclick="testMessageHandler('PASSWL')">Week Right</button>
+    <button class="inline-button" id="testButton5" onclick="testMessageHandler('PASSML')">Month Left</button>
+    <button class="inline-button" id="testButton6" onclick="testMessageHandler('PASSML')">Month Right</button>
+    <button class="inline-button" id="testButton7" onclick="testMessageHandler('PASSYL')">Year Left</button>
+    <button class="inline-button" id="testButton7" onclick="testMessageHandler('PASSYL')">Year Right</button>
+    <button class="inline-button" id="testButton7" onclick="testMessageHandler('OPENE')">Abrir Evento</button>
+    <button class="inline-button" id="testButton7" onclick="testMessageHandler('SELECT')">Selecionar</button>
+  </div>
+  <div class="top-section">
+    <div class="calendar-container">
+      <h2>Meu Calendário</h2>
+      <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=2&bgcolor=%239bc9fa&ctz=Europe%2FLisbon&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=bXVsdGltb2RhbGNhbGVuZGFyQGdtYWlsLmNvbQ&color=%23039BE5" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+    </div>
+    <div id="events-container" class="events-container" >
+      <div style="min-height: 10%;">
+        <h2>Dia Atual</h2>
+        <div id="selected-day-display" style="align-items: center; text-align: center; font-size: 200%">2023-12-22</div>
+      </div>
+      <h2>Lista de Movimentos</h2>
+      <div class="image-grid">
+        <div class="image-item"><img src="./moves/gif_day_right.gif" alt=""><p>Dia seguinte</p></div>
+        <div class="image-item"><img src="./moves/gif_select.gif" alt=""><p2>Selecionar</p2></div>
+        <div class="image-item"><img src="./moves/gif_day_left.gif" alt=""><p>Dia anterior</p></div>
+        <div class="image-item"><img src="./moves/gif_week_right.gif" alt=""><p>Semana seguinte</p></div>
+        <div class="image-item"><img src="./moves/gif_week_left.gif" alt=""><p>Semana anterior</p></div>
+        <div class="image-item"><img src="./moves/gif_month_right.gif" alt=""><p>Mês seguinte</p></div>
+        <div class="image-item"><img src="./moves/gif_month_left.gif" alt=""><p>Mês anterior</p></div>
+        <div class="image-item"><img src="./moves/gif_year_right.gif" alt=""><p>Ano seguinte</p></div>
+        <div class="image-item"><img src="./moves/gif_year_left.gif" alt=""><p>Ano anterior</p></div>
+        <div class="image-item large"><img src="./moves/gif_open_event.gif" alt="">
+        </div>
+        <p></p>
+        <p style="text-align: center;">Expandir dia</p>
+      </div>
+      <div id="selectedEventDetails" class="selected-event-details">
+        <h2>Evento Selecionado:</h2>
+        <div id="selectedEventInfo" style="align-items: center; text-align: center; font-size: 150%">Nenhum evento selecionado</div>
+      </div>
+    </div>
+  </div>
+  </div>        
+  <div id="eventsModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalSelectedDay">Selected Day: None</h3>
+      <div id="eventsListContainer"></div>
+      <div id="eventPreview" class="event-preview">
+        <h4>Event Preview:</h4>
+        <div id="eventPreviewContent">Nenhum evento selecionado</div>
+      </div>
+      <!-- <button onclick="closeModal()">Close</button> -->
+    </div>
+  </div>
   
-  let circle = SVG.find('.circle');
-  let square = SVG.find('.square');
-  let triangle = SVG.find('.triangle');
+  <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@latest/dist/svg.min.js"></script>
+  <script src="js/mmi.js"></script>
+  <script src="js/globals.js"></script>
+  <script src="js/jquery-3.6.4.min.js"></script>
+  <script src="js/webtoolkit.utf8.js"></script>
+  <script>
+    var mmiCli_Out_add = "wss://"+host+":8005/IM/USER1/";
+    var mmiCli_Out = null;
+    var selectedDay = new Date(2023, 11, 22);
+    var selectedEvent = undefined;
+    var modal_opne = false;
+    var currentEventIndex = 0;
+    var eventsArray = [];
+    mmiCli_Out = new MMIClientSocket(mmiCli_Out_add + "APP");
+    mmiCli_Out.onMessage.on(im1MessageHandler);
+    mmiCli_Out.onOpen.on(socketOpenHandler);
+    mmiCli_Out.openSocket();
 
-  circle.animate().attr({fill:'#ccc'});
-  square.animate().attr({fill:'#ccc'});
-  triangle.animate().attr({fill:'#ccc'});
+    function formatDate(date) {
+      return date.toISOString().split('T')[0];
+    }
 
+    function updateCalendarIframe(date) {
+      const formattedDate = formatDateForIframe(date);
+    
+      const newSrc = `https://calendar.google.com/calendar/embed?height=600&wkst=2&bgcolor=%239bc9fa&ctz=Europe%2FLisbon&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=bXVsdGltb2RhbGNhbGVuZGFyQGdtYWlsLmNvbQ&color=%23039BE5&dates=${formattedDate}/${formattedDate}`;
+      
+      document.querySelector('.calendar-container iframe').setAttribute('src', newSrc);
+    }
+    
+    function formatDateForIframe(date) {
+      const year = date.getFullYear();
+      const month = ('0' + (date.getMonth() + 1)).slice(-2);
+      const day = ('0' + date.getDate()).slice(-2);
+      return `${year}${month}${day}`;
+    }
+  
+    function displaySelectedDay() {
+      const el = document.getElementById('selected-day-display');
+      el.textContent = `${formatDate(selectedDay)}`;
+    }
+  
+    function addDays(days) {
+      selectedDay.setDate(selectedDay.getDate() + days);
+      displaySelectedDay();
+    }
+  
+    function addWeeks(weeks) {
+      addDays(weeks * 7);
+    }
+  
+    function addMonths(months) {
+      selectedDay.setMonth(selectedDay.getMonth() + months);
+      displaySelectedDay();
+    }
+  
+    function addYears(years) {
+      selectedDay.setFullYear(selectedDay.getFullYear() + years);
+      displaySelectedDay();
+    }
 
-  function im1MessageHandler(data) {
-
-    console.log("--------------im1MessageHandler---------------");
-
-    if(data != null && data!="RENEW" && data!="OK") {
-      console.log(data);
-      var content = $(data).find("emma\\:interpretation").first().text().trim();
-      if (typeof content == 'string') {
-        try {
-          // Try to parse XML
-          console.log(content);
-
-          //$("#response").html(content);
-          //$("#response").addClass("container");
-          //$("#response").addClass("responseText");
-		  
-		  let c = JSON.parse(content);
-		  let shape;
-          let color;
-		  if (c.hasOwnProperty("recognized") && c.recognized[1]=="CHANGE_COLOR"){
-			switch(c.recognized[2].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')){
-              case 'triangulo': shape = triangle; break;
-              case 'quadrado': shape = square; break;
-              case 'circulo': shape = circle; break;
-            }
-			switch(c.recognized[3].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')){
-              case 'azul': color = "#3333FF"; break;
-              case 'verde': color = "#33FF33"; break;
-              case 'cinzento': color = "#aaa"; break;
-              case 'vermelho': color = "#FF3333"; break;
-              case 'branco': color = "#fff"; break;
-              case 'rosa': color = "#ff66b2"; break;
-              case 'amarelo': color = "#ffff33"; break;
-              case 'preto': color = "#000"; break;
-              case 'laranja': color = "#FF9933"; break;
-            }
-			
-			shape.animate().attr({ fill: color });
-            sendToVoice("Mudei o " + c.nlu.shape + " para a cor " + c.nlu.color);
-		  }
-		  
-		/*
-          let c = JSON.parse(content);
-          let shape;
-          let color;
-          if (c.hasOwnProperty("nlu") && c.nlu.intent=="change_color") {
-            switch(c.nlu.shape.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')){
-              case 'triangulo': shape = triangle; break;
-              case 'quadrado': shape = square; break;
-              case 'circulo': shape = circle; break;
-            }
-
-            switch(c.nlu.color.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')){
-              case 'azul': color = "#3333FF"; break;
-              case 'verde': color = "#33FF33"; break;
-              case 'cinzento': color = "#aaa"; break;
-              case 'vermelho': color = "#FF3333"; break;
-              case 'branco': color = "#fff"; break;
-              case 'rosa': color = "#ff66b2"; break;
-              case 'amarelo': color = "#ffff33"; break;
-              case 'preto': color = "#000"; break;
-              case 'laranja': color = "#FF9933"; break;
-            }
-		   }
-		*/
-
-          
-          /*setTimeout(function(){
-            $("#response").html("");
-            $("#response").removeClass("container");
-            $("#response").removeClass("responseText");
-          }, 3000);
-          */
-        }
-        catch (e) { console.log(e); }
-
+    function selectEvent(event) {
+      selectedEvent = event;
+      updateSelectedEventDisplay();
+      updateEventPreview(event);
+    }
+    
+    function updateEventPreview(event) {
+      const previewDiv = document.getElementById("eventPreviewContent");
+      if (event) {
+        previewDiv.innerHTML = `
+          <p>Title: ${event.summary}</p>
+          <p>Start: ${formatDate(new Date(event.start.date || event.start.dateTime))}</p>
+          <p>End: ${formatDate(new Date(event.end.date || event.end.dateTime))}</p>
+          <p>Description: ${event.description || 'No description'}</p>
+          <!-- Add more event details as required -->
+        `;
+      } else {
+        previewDiv.textContent = "Nenhum evento selecionado";
       }
     }
-  }
+  
+    function handleCommand(command) {
+      console.log(command);
+      let month = selectedDay.getMonth();
+      let year = selectedDay.getFullYear();
+      switch (command["recognized"][1]) {
+        case "PASSYR":
+          addYears(1);
+          break;
+        case "PASSMR":
+          addMonths(1);
+          break;
+        case "PASSWR":
+          addWeeks(1);
+          break;
+        case "PASSDR":
+          if (modal_opne && eventsArray.length > 0) {
+            currentEventIndex = (currentEventIndex + 1) % eventsArray.length;
+            selectEvent(eventsArray[currentEventIndex]);
+          } else {
+            addDays(1);
+          }
+          break;
 
+        case "PASSYL":
+          addYears(-1);
+          break;
+        case "PASSML":
+          addMonths(-1);
+          break;
+        case "PASSWL":
+          addWeeks(-1);
+          break;
+        case "PASSDL":
+          if (modal_opne && eventsArray.length > 0) {
+            currentEventIndex = (currentEventIndex - 1 + eventsArray.length) % eventsArray.length;
+            selectEvent(eventsArray[currentEventIndex]);
+          } else {
+            addDays(-1);
+          }
+          break;
 
-/////
+        case "OPENE":
+          showEventsModal();
+          sendToVoice("Lista dos eventos do dia selecionado!");
+          break;
 
-  var mmiCli_1 = null;
-  mmiCli_1 = new MMIClient(null, "https://"+host+":8001/IM/USER1/TOUCH");
-	
+        case "SELECT":
+          if (modal_opne == false) {
+            console.log(selectedEvent);
+            if (selectedEvent != undefined ) {
+              updateEvent();
+              sendToVoice("Evento alterado!");
+            }
+          } else {
+            closeModal();
+            if (selectedEvent != undefined ) {
+              sendToVoice("Evento selecionado!");
+            }
+          };
+          break;
+      };
+      if (selectedDay.getMonth() != month || selectedDay.getFullYear() != year) {
+        updateCalendarIframe(selectedDay);
+      }
+    };
 
-   circle.on('click', function(){
-      console.log("circulo");
-      sendtouch("circulo");
-  })
+    function updateEvent() {
+      let updateData = {
+        eventId: selectedEvent.id,
+        newDate: formatDate(selectedDay)
+      };
 
-  square.on('click', function(){
-      console.log("quadrado");
-      sendtouch("quadrado");
-  })
+      // API call to update the event
+      fetch('http://localhost:4000/update_event/', {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(updateData),
+      })
+      .then(response => response.json())
+      .then(api_return => {
+        console.log("Event updated: ", api_return);
 
-  triangle.on('click', function(){
-      console.log("triangulo");
-      sendtouch("triangulo");
-  })
+      })
+      .catch(error => {
+        console.error("Error updating event: ", error);
+      })
+      selectEvent(undefined);
+      updateCalendarIframe(selectedDay);
+    }
 
-function sendtouch(shape){
-		var result = { "recognized" : ["TOUCH", "SHAPE", shape.toUpperCase()], "text": "" };
-		
-		mmiCli_1.sendToIM(new LifeCycleEvent("TOUCH", "IM", "text-1", "ctx-1").
-			doExtensionNotification(new EMMA("touch-", "touch", "command", 1, 0).
-            setValue(JSON.stringify(result))));
+    function showEventsModal() {
+      // Format the selected date as needed for your API call
+      let formattedDate = formatDate(selectedDay);
+      modal_opne = true;
+    
+      // Update the modal with the selected day
+      document.getElementById('modalSelectedDay').textContent = 'Selected Day: ' + formattedDate;
+    
+      // Prepare the API request body
+      console.log(selectedDay);
+      let body = {
+        "day": selectedDay.getDate(),
+        "month": selectedDay.getMonth() + 1,
+        "year": selectedDay.getFullYear()
+      };
+      console.log(body);
+    
+      // API call
+      fetch('http://localhost:4000/list_events_gestures/', {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(body),
+      })
+      .then(response => response.json())
+      .then(api_return => {
+        console.log(api_return);
+        var eventData = api_return;
+        const eventContainer = document.getElementById("eventsListContainer");
+        eventContainer.innerHTML = '';
+    
+        // Loop through the events and add them to the container
+        eventData.forEach((event, index) => {
+          const eventDiv = document.createElement("div");
+          eventDiv.textContent = event.summary;
+          eventContainer.appendChild(eventDiv);
+    
+          // Select the first event and save it
+          eventsArray.push(event);
+        });
 
-}
+        if (eventsArray.length > 0) {
+          selectEvent(eventsArray[0]);
+        }
+    
+        // Open the modal
+        document.getElementById('eventsModal').style.display = 'block';
+      });
+    }
 
-/*
-  circle.on('click', function(){
-      console.log("circulo");
-      sendToVoice("circulo");
-  })
+    function updateSelectedEventDisplay() {
+      const eventInfoDiv = document.getElementById("selectedEventInfo");
+      if (selectedEvent) {
+        eventInfoDiv.innerHTML = `Title: ${selectedEvent.summary}<br>Date: ${formatDate(new Date(selectedEvent.start.date || selectedEvent.start.dateTime))}`;
+      } else {
+        eventInfoDiv.textContent = "Nenhum evento selecionado";
+      }
+    }
+    
+    // Function to close the modal
+    function closeModal() {
+      modal_opne = false;
+      var modal = document.getElementById('eventsModal');
+      if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+      }
+    }
+    
 
-  square.on('click', function(){
-      console.log("quadrado");
-      sendToVoice("quadrado");
-  })
+    function socketOpenHandler(event) {
+      console.log("---------------openSocketHandler---------------")
+      if(mmiCli_Out.socket.readyState !== WebSocket.OPEN){return;}
+    }
 
-  triangle.on('click', function(){
-      console.log("triangulo");
-      sendToVoice("triangulo");
-  })
+    function im1MessageHandler(data) {
 
-  function sendToVoice(texto){
-    //let speak = "&lt;speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"pt-PT\"&gt;&lt;p&gt;" + "quadrado" + "&lt;/p&gt;&lt;/speak&gt";
-  let speak = "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"pt-PT\"><p>"+texto+"</p></speak>";
-  var result = speak;
+      console.log("--------------im1MessageHandler---------------");
+
+      if(data != null && data!="RENEW" && data!="OK") {
+        
+
+        var content = $(data).find("emma\\:interpretation").first().text().trim();
+        if (typeof content == 'string') {
+          try {
+            let command = JSON.parse(content)
+            handleCommand(command);
+            handleBorder(command);
+
+          } catch (e) { console.log(e); }
+        }
+      }
+    }
+
+    function handleBorder(command) {
+      document.querySelectorAll('.image-item img').forEach(img => {
+        img.classList.remove('border-pink');
+      });
+      let imageToHighlight;
+      switch (command["recognized"][1]) {
+        case "PASSDR":
+          imageToHighlight = document.querySelector('img[src$="gif_day_right.gif"]');
+          break;
+        case "PASSDL":
+          imageToHighlight = document.querySelector('img[src$="gif_day_left.gif"]');
+          break;
+        case "PASSWL":
+          imageToHighlight = document.querySelector('img[src$="gif_week_left.gif"]');
+          break;
+        case "PASSWR":
+          imageToHighlight = document.querySelector('img[src$="gif_week_right.gif"]');
+          break;
+        case "PASSYL":
+          imageToHighlight = document.querySelector('img[src$="gif_year_left.gif"]');
+          break;
+        case "PASSYR":
+          imageToHighlight = document.querySelector('img[src$="gif_year_right.gif"]');
+          break;
+
+        case "PASSML":
+          imageToHighlight = document.querySelector('img[src$="gif_month_left.gif"]');
+          break;
+        case "PASSMR":
+          imageToHighlight = document.querySelector('img[src$="gif_month_right.gif"]');
+          break;
+        case "OPENE":
+          imageToHighlight = document.querySelector('img[src$="gif_open_event.gif"]');
+          break;
+        case "SELECT":
+          imageToHighlight = document.querySelector('img[src$="gif_select.gif"]');
+          break;
+      }
+      sendToVoice(imageToHighlight.parentNode.querySelector('p').textContent);
+      if (imageToHighlight) {
+        imageToHighlight.classList.add('border-pink');
+      }
+    }
+
+    ///// Voice part untouched for now
+
+    var mmiCli_1 = null;
+    mmiCli_1 = new MMIClient(null, "https://"+host+":8000/IM/USER1/APPSPEECH");
+
+    function sendToVoice(texto){
+      // let speak = "&lt;speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"pt-PT\"&gt;&lt;p&gt;" + "quadrado" + "&lt;/p&gt;&lt;/speak&gt";
+      let speak = "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"pt-PT\"><p>"+texto+"</p></speak>";
+      var result = speak;
       mmiCli_1.sendToIM(new LifeCycleEvent("APPSPEECH", "IM", "text-1", "ctx-1").
-          doStartRequest(new EMMA("text-", "text", "command", 1, 0).
-            setValue(JSON.stringify(result))));
-  }
-*/  
+        doStartRequest(new EMMA("text-", "text", "command", 1, 0).
+        setValue(JSON.stringify(result))));
+    }
 
+    displaySelectedDay();
+  </script>
+  <script>
+    function updateSelectedDay(year, month, day) {
+      selectedDay = `${year}-${month}-${day}`;
+      displaySelectedDay();
+    }
+  </script>
+  <script>
+    function createXmlDocument(xmlString) {
+      var parser = new DOMParser();
+      var xmlDoc = parser.parseFromString(xmlString, "text/xml");
+      return xmlDoc;
+    }
 
+    function testMessageHandler(string) {
+      var xmlDataString = `
+      <mmi:mmi xmlns:mmi="http://www.w3.org/2008/04/mmi-arch" mmi:Version="1.0">
+        <mmi:ExtensionNotification mmi:context="gestures-ctx-1" mmi:requestId="gestures-id-3" mmi:source="GESTURES" mmi:target="FUSION">
+          <mmi:data>
+            <emma:emma xmlns:emma="http://www.w3.org/2003/04/emma" emma:Version="1.0">
+              <emma:interpretation emma:confidence="1" emma:end="" emma:id="gestures-1" emma:medium="gestures" emma:mode="command" emma:start="">
+                <command>{ "recognized": ["GESTURES", "${string}"], "confidence": "0.726459145545959"  }</command>
+              </emma:interpretation>
+            </emma:emma>
+          </mmi:data>
+        </mmi:ExtensionNotification>
+      </mmi:mmi>`;
 
-  /////////////////////////////////////////
-
-</script> 
-  </body>
+      im1MessageHandler(createXmlDocument(xmlDataString));
+    }
+  </script>
+</body>
 </html>
