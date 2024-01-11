@@ -95,6 +95,7 @@ actions:
   - action_provide_color_tag
   - create_submit_event
   - create_cancel_event
+  - delete_event
 
 # forms:
 #   create_event_form:

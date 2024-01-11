@@ -248,7 +248,7 @@ nlu:
     - Parar de editar o evento.
     - Desfazer as alterações.
 
-  - intent: delete_event
+- intent: delete_event
   examples: |
     - Eliminar este evento do calendário.
     - Podes remover o evento?
