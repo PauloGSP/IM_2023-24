@@ -247,3 +247,16 @@ nlu:
     - Cancelar a criação do evento.
     - Parar de editar o evento.
     - Desfazer as alterações.
+
+  - intent: delete_event
+  examples: |
+    - Eliminar este evento do calendário.
+    - Podes remover o evento?
+    - Apaga o evento do calendário, por favor.
+    - Remover o compromisso.
+    - Preciso cancelar o evento.
+    - Excluir este evento da agenda.
+    - Gostaria de deletar o evento específico.
+    - Desfazer o evento planejado.
+    - Retirar o evento do meu calendário.
+    - Eliminar o compromisso agendado.

@@ -271,6 +271,7 @@
     <button class="inline-button" id="testButton7" onclick="testMessageHandler('PASSYL')">Year Right</button>
     <button class="inline-button" id="testButton7" onclick="testMessageHandler('OPENE')">Abrir Evento</button>
     <button class="inline-button" id="testButton7" onclick="testMessageHandler('SELECT')">Selecionar</button>
+    <button class="inline-button" id="testButton7" onclick="testMessageHandler('DELECT')">Deletar</button>
   </div>
   <div class="top-section">
     <div id="events-list" class="events-list">
@@ -300,10 +301,13 @@
         <div class="image-item"><img src="./moves/gif_month_left.gif" alt=""><p>Mês anterior</p></div>
         <div class="image-item"><img src="./moves/gif_year_right.gif" alt=""><p>Ano seguinte</p></div>
         <div class="image-item"><img src="./moves/gif_year_left.gif" alt=""><p>Ano anterior</p></div>
+        <div class="image-item"></div>
+        <div class="image-item"><img src="./moves/gif_delete.gif" alt="" style="margin-right: 15px;"><p>Eliminar evento</p></div>
         <div class="image-item large"><img src="./moves/gif_open_event.gif" alt="">
         </div>
         <p></p>
         <p style="text-align: center;">Expandir dia</p>
+        
       </div>
       <div id="selectedEventDetails" class="selected-event-details">
         <h2>Evento Selecionado:</h2>
@@ -1045,12 +1049,6 @@
         eventsContainer.appendChild(eventDiv);
       });
     }
-    
-    // Example usage
-    populateEventsList([
-      { date: '2024-01-12', title: 'Event 1' },
-      { date: '2024-01-13', title: 'Event 2' }
-    ]);
   </script>
 </body>
 </html>
