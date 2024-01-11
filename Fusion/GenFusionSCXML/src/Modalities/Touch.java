@@ -13,10 +13,9 @@ import scxmlgen.interfaces.IModality;
  */
 public enum Touch implements IModality{
 
-    SHAPE_TRIANGULO("[TOUCH][SHAPE][TRIANGULO]",1500),
-    SHAPE_QUADRADO("[TOUCH][SHAPE][QUADRADO]",1500),
-    SHAPE_CIRCULO("[TOUCH][SHAPE][CIRCULO]",1500),
-
+    SELECT("[GESTURES][SELECT]",1500), //COMPLEMENTAR
+    CANCEL("[GESTURES][CANCEL]",1500), //REDUNDANTE
+    
   
     ;
     
