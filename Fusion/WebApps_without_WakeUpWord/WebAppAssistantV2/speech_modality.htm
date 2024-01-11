@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
-
+    
     <style>
       body {
         --indicator-color: black;
@@ -185,7 +185,17 @@ const onSampleComplete = (obj) => {
         classifyResult = classifyCache[cacheKey];
         let noise = classifyResult.results.find(r => r.label === 'noise').value;
         let casa_viva = classifyResult.results.find(r => r.label === 'casa_viva').value;
-
+        document.addEventListener('keydown', function(event) {
+    if (event.key === 'k' || event.key === 'K') 
+    {
+      casa_vivaCount++;
+      if(!isOnKWS){
+              recognition.start();
+              circle.animate(20, 0, 'now').attr({ fill: '#00a431' });
+              transcriptDiv.textContent = "...";
+              isOnKWS=true;
+            }
+    }});
 if(casa_viva>.3)
         console.log(casa_viva);
         if (noise >= 0.6) {
@@ -223,7 +233,7 @@ async function InitializeKWS(){
   // then take 1s of data
   sensor.takeSample(500, 16000, () => {}).then(onSampleComplete);
 };
-//InitializeKWS();
+InitializeKWS();
 
 
   import { interpolateGreens } from "https://cdn.skypack.dev/d3-scale-chromatic@3"
@@ -249,7 +259,7 @@ async function InitializeKWS(){
     console.error("REC ERROR"+event.error);
     transcriptDiv.innerHTML = firstSent;
     circle.animate(20, 0, 'now').attr({ fill: '#000' });
-    //startkws();
+    startkws();
   };
 
   recognition.onresult = function(event) {
@@ -279,16 +289,14 @@ async function InitializeKWS(){
 
           sendMMI(final_transcript);
           circle.animate(20, 0, 'now').attr({ fill: '#000' });
-          //startkws();
-          
+          startkws();
         }else{
           transcriptDiv.innerHTML = "<span style='color:#ff9494'><b>Desculpe nao consegui ententer.</b></span>";
         }
 
         resetfunc = setTimeout(function(){
           transcriptDiv.innerHTML = firstSent;
-          recognition.start();
-        }, 1000);
+        }, 3000);
 
         speechActive = false;
       }else{
@@ -307,14 +315,9 @@ async function InitializeKWS(){
     }
   };
 
-  $(".mic").on('click', function(){
-    recognition.start();
-    console.log("start");
-  })
-  
 
   var vadActive = false;
-  var speechActive = true;
+  var speechActive = false;
 
   async function main() {
     const myvad = await vad.MicVAD.new({
@@ -349,12 +352,8 @@ async function InitializeKWS(){
       },
     })
     //myvad.start()
-
-
-
-  
   }
-  //main()
+  main()
 
   if ('speechSynthesis' in window) {
 	  console.log('Your browser <strong>supports</strong> speech synthesis.');
@@ -396,39 +395,42 @@ async function InitializeKWS(){
   var mmiCli_1 = null;
   mmiCli_1 = new MMIClient(null, mmi_fusion + "SPEECHIN");
 
+
+
+
   function sendMMI(final_transcript){
 
-var obj = new Object();
-obj.text = final_transcript;
-$.post( "http://127.0.0.1:5005/model/parse", JSON.stringify(obj), function( data ) {
-console.log(data);
+    var obj = new Object();
+    obj.text = final_transcript;
+    $.post( "http://127.0.0.1:5005/model/parse", JSON.stringify(obj), function( data ) {
+    console.log(data);
 
+ 
+    if(data.intent.name=='change_color'){
+      var shape='' ;
+      var color='' ;
 
-if(data.intent.name=='change_color'){
-  var shape='' ;
-  var color='' ;
-
-  for (let i = 0; i < data.entities.length; i++)
-  {
-    if(data.entities[i].entity=='shape')
-      shape=data.entities[i].value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    if(data.entities[i].entity=='color')
-      color=data.entities[i].value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  }
-
-  var message = {'intent':'change_color','shape':shape,'color':color}
-  var messaget = btoa(unescape(encodeURIComponent(final_transcript)));
-  var result = { "recognized" : ["SPEECH", "CHANGE_COLOR"], "text": messaget, "nlu": message };
-if(shape!="")
-result.recognized.push(shape);
-if(color!="")
-result.recognized.push(color);
-
-  mmiCli_1.sendToIM(new LifeCycleEvent("SPEECHIN", "IM", "text-1", "ctx-1").
-        doExtensionNotification(new EMMA("text-", "text", "command", 1, 0).
-        setValue(JSON.stringify(result))));
-}
-});
+      for (let i = 0; i < data.entities.length; i++)
+      {
+        if(data.entities[i].entity=='shape')
+    	    shape=data.entities[i].value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if(data.entities[i].entity=='color')
+    	    color=data.entities[i].value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      }
+  
+      var message = {'intent':'change_color','shape':shape,'color':color}
+      var messaget = btoa(unescape(encodeURIComponent(final_transcript)));
+      var result = { "recognized" : ["SPEECH", "CHANGE_COLOR"], "text": messaget, "nlu": message };
+	  if(shape!="")
+		result.recognized.push(shape);
+	  if(color!="")
+		result.recognized.push(color);
+	  
+      mmiCli_1.sendToIM(new LifeCycleEvent("SPEECHIN", "IM", "text-1", "ctx-1").
+            doExtensionNotification(new EMMA("text-", "text", "command", 1, 0).
+            setValue(JSON.stringify(result))));
+    }
+  });
 
   /*
     
