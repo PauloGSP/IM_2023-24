@@ -583,6 +583,11 @@ InitializeKWS();
         //   })
       }
       
+   
+      if (data.intent.name=='delete_event'){
+        var message = {'intent':'delete_event'};
+      }
+
       if (data.intent.name=='create_event' && estado == "listar"){
           // var modal = document.getElementById('event-modal');
           // modal.style.display = "none";
@@ -631,7 +636,7 @@ InitializeKWS();
         var message = {'intent':'provide_event_day','body':body}
       }
       
-      if (data.intent.name=='provide_event_date' && estado == "criar"){
+      if (data.intent.name=='provide_event_date' ){
         let date = "";
         for (let i = 0; i < data.entities.length; i++) {
           if (data.entities[i].entity == 'date'){
@@ -684,7 +689,7 @@ InitializeKWS();
 
       if (message != {}){
         var messaget = btoa(unescape(encodeURIComponent(final_transcript)));
-        var result = { "recognized" : ["SPEECH", "SPEECHIN", "APP"], "text": messaget, "nlu": message };
+        var result = { "recognized" : ["SPEECH", data.intent.name.toUpperCase()], "text": messaget, "nlu": message };
         mmiCli_1. sendToIM(new LifeCycleEvent("SPEECHIN", "IM", "text-1", "ctx-1").
                   doExtensionNotification(new EMMA("text-", "text", "command", 1, 0).
                   setValue(JSON.stringify(result))));

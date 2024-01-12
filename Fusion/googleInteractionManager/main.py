@@ -279,8 +279,8 @@ async def list_all_events_of_a_date(date: dict):
 
         ev = []
         for e in events:
-            ev.append(e["summary"])
-            print(e["summary"])
+            ev.append(e)
+            print(e)
         return ev
 
     except HttpError as error:
@@ -546,6 +546,99 @@ async def update_event(event_data: dict):
         updated_event = service.events().update(calendarId='primary', eventId=event_id, body=event).execute()
 
         return {"status": "success", "updated_event": updated_event}
+
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        
+        
+@app.post("/detect_date/")
+async def update_event_coisa(event_data: dict):
+
+    code, days, weeks, months, years = detectDay(event_data["date"])
+    start_date = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = start_date + timedelta(days=1)
+
+    if code == "current":
+        if days != 0:
+            start_date = start_date + timedelta(days=days)
+            end_date = start_date + timedelta(days=1)
+        elif weeks != 0:
+            start_date = start_date - timedelta(days=start_date.weekday())
+            end_date = start_date + timedelta(weeks=1)
+        elif months != 0:
+            start_date = start_date.replace(day=1)
+            end_date = (start_date + timedelta(days=32)).replace(day=1)
+        elif years != 0:
+            start_date = start_date.replace(day=1, month=1)
+            end_date = (start_date + timedelta(days=366)).replace(day=1, month=1)
+
+    if code == "fromto":
+        if days != 0:
+            start_date = start_date + timedelta(days=days)
+            end_date = start_date + timedelta(days=1)
+        elif weeks != 0:
+            start_date = start_date + timedelta(weeks=weeks)
+            end_date = start_date + timedelta(days=1)
+        elif months != 0:
+            start_date = (start_date.replace(day=1) + timedelta(days=32*months)).replace(day=start_date.day)
+            end_date = start_date + timedelta(days=1)
+        elif years != 0:
+            start_date = (start_date.replace(day=1, month=1) + timedelta(days=365*years)).replace(day=start_date.day)
+            end_date = start_date + timedelta(days=1)
+
+    if code == "next":
+        if days != 0:
+            end_date = start_date + timedelta(days=days)
+        elif weeks != 0:
+            start_date = start_date - timedelta(days=start_date.weekday()) + timedelta(weeks=1)
+            end_date = start_date + timedelta(weeks=weeks)
+        elif months != 0:
+            start_date = (start_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+            end_date = (start_date + timedelta(days=32)).replace(day=1)
+        elif years != 0:
+            start_date = (start_date.replace(day=1, month=1) + timedelta(days=366)).replace(day=1)
+            end_date = (start_date + timedelta(days=366*years)).replace(day=1)
+
+    start_date = start_date.isoformat() + "Z"
+    end_date = end_date.isoformat() + "Z"
+    print(start_date)
+    print(end_date)
+    
+    creds = getCredentials()
+    
+    event_id = event_data["eventId"]
+    print(event_id)
+    
+    try:
+        service = build("calendar", "v3", credentials=creds)
+
+        # Retrieve the event from the calendar
+        event = service.events().get(calendarId='primary', eventId=event_id).execute()
+        
+        print(event)
+
+        # Update the date of the event
+        event['start'] = {'date': start_date.split('T')[0]}
+        event['end'] = {'date': end_date.split('T')[0]}
+
+        updated_event = service.events().update(calendarId='primary', eventId=event_id, body=event).execute()
+
+        return {"status": "success", "updated_event": updated_event}
+
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        
+
+@app.post("/delete_event/")
+async def delete_event(event: dict):
+    event_id = event["eventId"]
+    creds = getCredentials()
+    try:
+        service = build("calendar", "v3", credentials=creds)
+
+        # Attempt to delete the event
+        service.events().delete(calendarId='primary', eventId=event_id).execute()
+        return {"status": "success", "message": "Event deleted successfully"}
 
     except HttpError as error:
         print(f"An error occurred: {error}")

@@ -4,7 +4,7 @@ import scxmlgen.interfaces.IOutput;
 
 public enum Output implements IOutput{
     
-    CANCEL("[FUSION][CANCEL]"),
+    DELETE_EVENT("[FUSION][DELETE_EVENT]"),
     SELECT("[FUSION][SELECT]"),
     CHANGE_EVENT_DATE("[FUSION][CHANGE_EVENT_DATE]"),
     PROVIDE_DATE("[FUSION][PROVIDE_DATE]"),

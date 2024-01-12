@@ -251,7 +251,7 @@
 </head>
 <body>
   <h1 style="background-color: #4F5D73; margin: 0;">Assistente de Calendário</h1>
-  <div class="buttons-container">Buttons de Voz
+  <!-- <div class="buttons-container">Buttons de Voz
     <button class="inline-button" id="testButton1" onclick="testMessageHandler('PASSDL')">Day Left</button>
     <button class="inline-button" id="testButton2" onclick="testMessageHandler('PASSDL')">Day Left</button>
     <button class="inline-button" id="testButton3" onclick="testMessageHandler('PASSDL')">Day Left</button>
@@ -272,7 +272,7 @@
     <button class="inline-button" id="testButton7" onclick="testMessageHandler('OPENE')">Abrir Evento</button>
     <button class="inline-button" id="testButton7" onclick="testMessageHandler('SELECT')">Selecionar</button>
     <button class="inline-button" id="testButton7" onclick="testMessageHandler('DELECT')">Deletar</button>
-  </div>
+  </div> -->
   <div class="top-section">
     <div id="events-list" class="events-list">
       <h2 class="events-list-title">Events Listed</h2>
@@ -288,7 +288,7 @@
     <div id="events-container" class="events-container" >
       <div style="min-height: 10%;">
         <h2>Dia Atual</h2>
-        <div id="selected-day-display" style="align-items: center; text-align: center; font-size: 200%">2023-12-22</div>
+        <div id="selected-day-display" style="align-items: center; text-align: center; font-size: 200%">2024-01-12</div>
       </div>
       <h2>Lista de Movimentos</h2>
       <div class="image-grid">
@@ -327,6 +327,22 @@
       <!-- <button onclick="closeModal()">Close</button> -->
     </div>
   </div>
+  <div id="event-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <form id="event-form">
+        <label for="title">Título:</label>
+        <input type="text" id="title" name="title" required><br>
+        <label for="date">Data:</label>
+        <input type="date" id="date" name="date" required><br>
+        <label for="time">Horário:</label>
+        <input type="time" id="time" name="time" required><br>
+        <label for="color">Cor:</label>
+        <input type="text" id="color" name="color" required><br>
+        <input type="submit" value="Create Event">
+      </form>
+    </div>
+  </div>
   
   <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@latest/dist/svg.min.js"></script>
   <script src="js/mmi.js"></script>
@@ -336,7 +352,7 @@
   <script>
     var mmiCli_Out_add = "wss://"+host+":8005/IM/USER1/";
     var mmiCli_Out = null;
-    var selectedDay = new Date(2023, 11, 22);
+    var selectedDay = new Date(2024, 0, 12);
     var selectedEvent = undefined;
     var modal_opne = false;
     var currentEventIndex = 0;
@@ -470,144 +486,42 @@
             }
           };
           break;
+        case "DELETE_EVENT":
+          if (selectedEvent != undefined ) {
+            deleteEvent();
+            sendToVoice("Evento eliminado!");
+          } else {
+            sendToVoice("Evento não pode ser eliminado!");
+          }
+          break;
       };
       if (selectedDay.getMonth() != month || selectedDay.getFullYear() != year) {
         updateCalendarIframe(selectedDay);
       }
-    };
+      let c = command;
+      console.log(c);
 
-    function updateEvent() {
-      let updateData = {
-        eventId: selectedEvent.id,
-        newDate: formatDate(selectedDay)
-      };
-
-      // API call to update the event
-      fetch('http://localhost:4000/update_event/', {
-        method: "POST",
-        headers: {"content-type": "application/json"},
-        body: JSON.stringify(updateData),
-      })
-      .then(response => response.json())
-      .then(api_return => {
-        console.log("Event updated: ", api_return);
-
-      })
-      .catch(error => {
-        console.error("Error updating event: ", error);
-      })
-      selectEvent(undefined);
-      updateCalendarIframe(selectedDay);
-    }
-
-    function showEventsModal() {
-      // Format the selected date as needed for your API call
-      let formattedDate = formatDate(selectedDay);
-      modal_opne = true;
-    
-      // Update the modal with the selected day
-      document.getElementById('modalSelectedDay').textContent = 'Selected Day: ' + formattedDate;
-    
-      // Prepare the API request body
-      console.log(selectedDay);
-      let body = {
-        "day": selectedDay.getDate(),
-        "month": selectedDay.getMonth() + 1,
-        "year": selectedDay.getFullYear()
-      };
-      console.log(body);
-    
-      // API call
-      fetch('http://localhost:4000/list_events_gestures/', {
-        method: "POST",
-        headers: {"content-type": "application/json"},
-        body: JSON.stringify(body),
-      })
-      .then(response => response.json())
-      .then(api_return => {
-        console.log(api_return);
-        var eventData = api_return;
-        const eventContainer = document.getElementById("eventsListContainer");
-        eventContainer.innerHTML = '';
-    
-        // Loop through the events and add them to the container
-        eventData.forEach((event, index) => {
-          const eventDiv = document.createElement("div");
-          eventDiv.textContent = event.summary;
-          eventContainer.appendChild(eventDiv);
-    
-          // Select the first event and save it
-          eventsArray.push(event);
-        });
-
-        if (eventsArray.length > 0) {
-          selectEvent(eventsArray[0]);
-        }
-    
-        // Open the modal
-        document.getElementById('eventsModal').style.display = 'block';
-      });
-    }
-
-    function updateSelectedEventDisplay() {
-      const eventInfoDiv = document.getElementById("selectedEventInfo");
-      if (selectedEvent) {
-        eventInfoDiv.innerHTML = `Title: ${selectedEvent.summary}<br>Date: ${formatDate(new Date(selectedEvent.start.date || selectedEvent.start.dateTime))}`;
-      } else {
-        eventInfoDiv.textContent = "Nenhum evento selecionado";
-      }
-    }
-    
-    // Function to close the modal
-    function closeModal() {
-      modal_opne = false;
-      var modal = document.getElementById('eventsModal');
-      if (modal.style.display === 'block') {
-        modal.style.display = 'none';
-      }
-    }
-    
-
-    function socketOpenHandler(event) {
-      console.log("---------------openSocketHandler---------------")
-      if(mmiCli_Out.socket.readyState !== WebSocket.OPEN){return;}
-    }
-
-    function im1MessageHandler(data) {
-
-      console.log("--------------im1MessageHandler---------------");
-
-      if(data != null && data!="RENEW" && data!="OK") {
-        
-
-        var content = $(data).find("emma\\:interpretation").first().text().trim();
-        if (typeof content == 'string') {
-          try {
-            let command = JSON.parse(content);
-            if (command["recognized"][0] == "GESTURES") {
-              handleCommand(command);
-              handleBorder(command);
-            } else {
-              handleVoiceCommand(command);
-            }
-          } catch (e) { console.log(e); }
+      if (c.hasOwnProperty("nlu") && c.nlu.intent=="delete_event"){
+        if (selectedEvent != undefined ) {
+          deleteEvent();
+          sendToVoice("Evento eliminado!");
+        } else {
+          sendToVoice("Evento não pode ser eliminado!");
         }
       }
-    }
 
-    function handleVoiceCommand(c) {
       if (c.hasOwnProperty("nlu") && c.nlu.intent=="list_all_events"){
-        $.get( "http://localhost:4000/list_all_events/", JSON.stringify(data), function( api_return ) {
-          console.log(api_return);
-          var eventData=api_return;
-          const eventContainer = document.getElementById("events-list");
-          eventContainer.innerHTML = '';
+        $.get( "http://localhost:4000/list_all_events/", function( api_return ) {
           sendToVoice("Listando os próximos eventos");
-          eventData.forEach(event => {
-          const eventDiv = document.createElement("div");
-          eventDiv.textContent = event.summary;
-          eventContainer.appendChild(eventDiv);
+          let event_list = []
+          api_return.forEach(event => {
+            try {
+              event_list.push({"date":event.start.dateTime, "title":event.summary});
+            } catch {
+              event_list.push({"date":event.start.date, "title":event.summary});
+            }
           });
+          populateEventsList(event_list);
         });
       }
 
@@ -666,21 +580,18 @@
         }).then(response => response.json())
           .then(api_return => {
             console.log(api_return);
-          var eventData=api_return;
-          const eventContainer = document.getElementById("events-list");
-          eventContainer.innerHTML = '';
-          
-          // Loop through the events and add them to the container
-          sendToVoice("Listando os eventos de "+date);
-          eventData.forEach(event => {
-          // Create a new div element for each event
-          const eventDiv = document.createElement("div");
-          
-          // Set the text content to the event summary
-          eventDiv.textContent = event;
-          // Append the event div to the container
-          eventContainer.appendChild(eventDiv);})
-        })
+            // Loop through the events and add them to the container
+            sendToVoice("Listando os eventos de " + date);
+            let event_list = []
+            api_return.forEach(event => {
+              try {
+                event_list.push({"date":event.start.dateTime, "title":event.summary});
+              } catch {
+                event_list.push({"date":event.start.date, "title":event.summary});
+              }
+            });
+            populateEventsList(event_list);
+        });
       }
 
       if (c.hasOwnProperty("nlu") && c.nlu.intent=="list_all_events_of_a_color_tag") {
@@ -701,16 +612,16 @@
         }).then(response => response.json())
           .then(api_return => {
             console.log(api_return);
-            var eventData=api_return;
-            const eventContainer = document.getElementById("events-list");
-            eventContainer.innerHTML = '';
-            eventData.forEach(event => {
-              const eventDiv = document.createElement("div");
-              eventDiv.textContent = event.summary;
-              eventContainer.appendChild(eventDiv);
-            })
-            sendToVoice("Listando os da cor "+cor
-          );
+            sendToVoice("Listando os da cor "+cor)
+            let event_list = []
+            api_return.forEach(event => {
+              try {
+                event_list.push({"date":event.start.dateTime, "title":event.summary});
+              } catch {
+                event_list.push({"date":event.start.date, "title":event.summary});
+              }
+            });
+            populateEventsList(event_list);
         })
       }              
       if (c.hasOwnProperty("nlu") && c.nlu.intent=="list_an_event_by_title") {
@@ -731,15 +642,16 @@
         }).then(response => response.json())
           .then(api_return => {
             console.log(api_return);
-            var eventData=api_return;
-            const eventContainer = document.getElementById("events-list");
-            eventContainer.innerHTML = '';
-            eventData.forEach(event => {
-            const eventDiv = document.createElement("div");
-            eventDiv.textContent = event.summary;
-            eventContainer.appendChild(eventDiv);})
-            sendToVoice("Listando o evento com título "+title
-          );
+            sendToVoice("Listando o evento com título "+title);
+            let event_list = []
+            api_return.forEach(event => {
+              try {
+                event_list.push({"date":event.start.dateTime, "title":event.summary});
+              } catch {
+                event_list.push({"date":event.start.date, "title":event.summary});
+              }
+            });
+            populateEventsList(event_list);
         }) 
       }
       if (c.hasOwnProperty("nlu") && c.nlu.intent=="provide_title") {
@@ -751,8 +663,6 @@
         
         var titleInput = document.getElementById('title');
         titleInput.value = title; // Set the title in the input field
-        
-
       }
       if (c.hasOwnProperty("nlu") && c.nlu.intent=="provide_event_date") {
         let date;
@@ -907,6 +817,7 @@
 
         })
       }
+
       // FECHAR MODAL
       if (c.hasOwnProperty("nlu") && c.nlu.intent=="create_event"){
         console.log(modal)
@@ -935,6 +846,152 @@
         console.log('goated')
         sendToVoice("Cancelei e fechei o evento " );
       }
+    };
+
+    function updateEvent() {
+      let updateData = {
+        eventId: selectedEvent.id,
+        newDate: formatDate(selectedDay)
+      };
+
+      // API call to update the event
+      fetch('http://localhost:4000/update_event/', {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(updateData),
+      })
+      .then(response => response.json())
+      .then(api_return => {
+        console.log("Event updated: ", api_return);
+
+      })
+      .catch(error => {
+        console.error("Error updating event: ", error);
+      })
+      selectEvent(undefined);
+      updateCalendarIframe(selectedDay);
+    }
+
+    function showEventsModal() {
+      // Format the selected date as needed for your API call
+      let formattedDate = formatDate(selectedDay);
+      modal_opne = true;
+    
+      // Update the modal with the selected day
+      document.getElementById('modalSelectedDay').textContent = 'Selected Day: ' + formattedDate;
+    
+      // Prepare the API request body
+      console.log(selectedDay);
+      let body = {
+        "day": selectedDay.getDate(),
+        "month": selectedDay.getMonth() + 1,
+        "year": selectedDay.getFullYear()
+      };
+      console.log(body);
+    
+      // API call
+      fetch('http://localhost:4000/list_events_gestures/', {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(body),
+      })
+      .then(response => response.json())
+      .then(api_return => {
+        console.log(api_return);
+        var eventData = api_return;
+        const eventContainer = document.getElementById("eventsListContainer");
+        eventContainer.innerHTML = '';
+    
+        // Loop through the events and add them to the container
+        eventData.forEach((event, index) => {
+          const eventDiv = document.createElement("div");
+          eventDiv.textContent = event.summary;
+          eventContainer.appendChild(eventDiv);
+    
+          // Select the first event and save it
+          eventsArray.push(event);
+        });
+
+        if (eventsArray.length > 0) {
+          selectEvent(eventsArray[0]);
+        }
+    
+        // Open the modal
+        document.getElementById('eventsModal').style.display = 'block';
+      });
+    }
+
+    function updateSelectedEventDisplay() {
+      const eventInfoDiv = document.getElementById("selectedEventInfo");
+      if (selectedEvent) {
+        eventInfoDiv.innerHTML = `Title: ${selectedEvent.summary}<br>Date: ${formatDate(new Date(selectedEvent.start.date || selectedEvent.start.dateTime))}`;
+      } else {
+        eventInfoDiv.textContent = "Nenhum evento selecionado";
+      }
+    }
+    
+    // Function to close the modal
+    function closeModal() {
+      modal_opne = false;
+      var modal = document.getElementById('eventsModal');
+      if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+      }
+    }
+    
+
+    function socketOpenHandler(event) {
+      console.log("---------------openSocketHandler---------------")
+      if(mmiCli_Out.socket.readyState !== WebSocket.OPEN){return;}
+    }
+
+    function im1MessageHandler(data) {
+
+      console.log("--------------im1MessageHandler---------------");
+
+      if(data != null && data!="RENEW" && data!="OK") {
+        
+
+        var content = $(data).find("emma\\:interpretation").first().text().trim();
+        if (typeof content == 'string') {
+          try {
+              let command = JSON.parse(content);
+              if (command["recognized"][1] == "CHANGE_EVENT_DATE") {
+                var contents = [];
+                $(data).find("emma\\:interpretation").each(function() {
+                    contents.push($(this).text().trim());
+                });
+                console.log(contents);
+                contents.forEach(function(content) {
+                  let c = JSON.parse(content);
+                  if (c.hasOwnProperty("nlu") && c.nlu.intent=="provide_event_date") {
+                    let date;
+                    console.log(c.nlu.body);
+                    date = c.nlu.body.date.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    
+                    fetch('http://localhost:4000/detect_date/', {
+                      method: "POST",
+                      headers: {"content-type": "application/json"},
+                      body: JSON.stringify({"date":date, "eventId":selectedEvent.id}),
+                    })
+                    .then(response => response.json())
+                    .then(api_return => {
+                      console.log("Data mudada: ", api_return);
+                      closeModal();
+                      selectEvent(undefined);
+                      updateCalendarIframe(selectedDay);
+                      sendToVoice("Evento alterado com SUCESSO.");
+                    })
+                   
+              };
+                });
+              } else {
+                handleCommand(command);
+                handleBorder(command);
+              }
+          } catch (e) { console.log(e); }
+        }
+      }
     }
 
     function handleBorder(command) {
@@ -942,6 +999,7 @@
         img.classList.remove('border-pink');
       });
       let imageToHighlight;
+      console.log(command["recognized"][1]);
       switch (command["recognized"][1]) {
         case "PASSDR":
           imageToHighlight = document.querySelector('img[src$="gif_day_right.gif"]');
@@ -974,6 +1032,8 @@
         case "SELECT":
           imageToHighlight = document.querySelector('img[src$="gif_select.gif"]');
           break;
+        case "DELETE_EVENT":
+          imageToHighlight= document.querySelector('img[src$="gif_delete.gif]')
       }
       sendToVoice(imageToHighlight.parentNode.querySelector('p').textContent);
       if (imageToHighlight) {
@@ -1025,29 +1085,45 @@
       </mmi:mmi>`;
 
       im1MessageHandler(createXmlDocument(xmlDataString));
-    }
-  </script>
-  <script>
+    };
+
     function populateEventsList(events) {
+      console.log(events)
       const eventsContainer = document.getElementById('events-listed');
-      eventsContainer.innerHTML = ''; // Clear existing events
-    
+      console.log(1);
+      eventsContainer.innerHTML = ' '; // Clear existing events
       events.forEach(event => {
         const eventDiv = document.createElement('div');
         eventDiv.classList.add('event-item');
-    
+        console.log(3);
         const dateDiv = document.createElement('div');
         dateDiv.classList.add('event-date');
         dateDiv.textContent = event.date; // Replace with your event date
-    
+        console.log(4);
         const titleDiv = document.createElement('div');
         titleDiv.classList.add('event-title');
         titleDiv.textContent = event.title; // Replace with your event title
-    
+        console.log(5);
         eventDiv.appendChild(dateDiv);
         eventDiv.appendChild(titleDiv);
         eventsContainer.appendChild(eventDiv);
       });
+    }
+
+    function deleteEvent() {
+      let event = selectedEvent;
+      body = {"eventId": event.id};
+      fetch('http://localhost:4000/delete_event/', {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(body),
+      })
+      .then(response => response.json())
+      .then(api_return => {
+        console.log(api_return);
+      });
+      selectEvent(undefined);
+      updateCalendarIframe(selectedDay);
     }
   </script>
 </body>

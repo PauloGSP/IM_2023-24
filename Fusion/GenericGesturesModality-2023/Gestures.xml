@@ -2,51 +2,56 @@
 <Gestures>
   <Gesture>
     <ID>0</ID>
+    <NAME>Delete</NAME>
+    <SEMANTIC>Delete</SEMANTIC>
+  </Gesture>
+  <Gesture>
+    <ID>1</ID>
     <NAME>OpenEvent</NAME>
     <SEMANTIC>OpenE</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>1</ID>
+    <ID>2</ID>
     <NAME>PassDayLeft</NAME>
     <SEMANTIC>PassDL</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>2</ID>
+    <ID>3</ID>
     <NAME>PassDayRight</NAME>
     <SEMANTIC>PassDR</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>3</ID>
+    <ID>4</ID>
     <NAME>PassMonthLeft</NAME>
     <SEMANTIC>PassML</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>4</ID>
+    <ID>5</ID>
     <NAME>PassMonthRight</NAME>
     <SEMANTIC>PassMR</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>5</ID>
+    <ID>6</ID>
     <NAME>PassWeekLeft</NAME>
     <SEMANTIC>PassWL</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>6</ID>
+    <ID>7</ID>
     <NAME>PassWeekRight</NAME>
     <SEMANTIC>PassWR</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>7</ID>
+    <ID>8</ID>
     <NAME>PassYearLeft</NAME>
     <SEMANTIC>PassYL</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>8</ID>
+    <ID>9</ID>
     <NAME>PassYearRight</NAME>
     <SEMANTIC>PassYR</SEMANTIC>
   </Gesture>
   <Gesture>
-    <ID>9</ID>
+    <ID>10</ID>
     <NAME>Select</NAME>
     <SEMANTIC>Select</SEMANTIC>
   </Gesture>

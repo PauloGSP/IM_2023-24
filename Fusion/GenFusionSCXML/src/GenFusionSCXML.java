@@ -30,13 +30,13 @@ public class GenFusionSCXML {
     fg.Complementary(Touch.SELECT, Speech.PROVIDE_DATE, Output.CHANGE_EVENT_DATE);
     fg.Single(Touch.SELECT, Output.SELECT);
     fg.Single(Speech.PROVIDE_DATE, Output.PROVIDE_DATE);
-    fg.Redundancy(Speech.CANCEL, Touch.CANCEL,Output.CANCEL);  
+    fg.Redundancy(Speech.DELETE_EVENT, Touch.DELETE_EVENT,Output.DELETE_EVENT);  
     /*
     
 
 
 
-
+        
 
     fg.Sequence(Speech.SQUARE, SecondMod.RED, Output.SQUARE_RED);
     fg.Sequence(Speech.SQUARE, SecondMod.BLUE, Output.SQUARE_BLUE);

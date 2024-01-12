@@ -558,29 +558,7 @@ InitializeKWS();
           "title":title
         }
         var message = {'intent':'list_an_event_by_title','body':body}
-        // console.log(body)
-        // fetch('http://localhost:4000/list_an_event_by_title/', {
-        //    method: "POST",
-        //    headers: {"content-type": "application/json"},
-        //    body: JSON.stringify(body),
-        // }).then(response => response.json())
-        //   .then(api_return => {
-        //     console.log(api_return);
-        //     var eventData=api_return;
-        //   const eventContainer = document.getElementById("events-container");
-        //   eventContainer.innerHTML = '';
-
-        //   // Loop through the events and add them to the container
-        //   eventData.forEach(event => {
-        //   // Create a new div element for each event
-        //   const eventDiv = document.createElement("div");
-          
-        //   // Set the text content to the event summary
-        //   eventDiv.textContent = event.summary;
-
-        //   // Append the event div to the container
-        //   eventContainer.appendChild(eventDiv);})
-        //   })
+    
       }
       
       if (data.intent.name=='create_event' && estado == "listar"){
@@ -684,7 +662,7 @@ InitializeKWS();
 
       if (message != {}){
         var messaget = btoa(unescape(encodeURIComponent(final_transcript)));
-        var result = { "recognized" : ["SPEECH", "SPEECHIN", "APP"], "text": messaget, "nlu": message };
+        var result = { "recognized" : ["SPEECH", data.intent.name.upperCase()], "text": messaget, "nlu": message };
         mmiCli_1. sendToIM(new LifeCycleEvent("SPEECHIN", "IM", "text-1", "ctx-1").
                   doExtensionNotification(new EMMA("text-", "text", "command", 1, 0).
                   setValue(JSON.stringify(result))));

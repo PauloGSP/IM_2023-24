@@ -13,8 +13,8 @@ import scxmlgen.interfaces.IModality;
  */
 public enum Touch implements IModality{
 
-    SELECT("[GESTURES][SELECT]",1500), //COMPLEMENTAR
-    CANCEL("[GESTURES][CANCEL]",1500), //REDUNDANTE
+    SELECT("[GESTURES][SELECT]",5000), //COMPLEMENTAR
+    DELETE_EVENT("[GESTURES][DELETE]",5000), //REDUNDANTE
     
   
     ;
