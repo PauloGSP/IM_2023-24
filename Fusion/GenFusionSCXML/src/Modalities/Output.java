@@ -8,6 +8,7 @@ public enum Output implements IOutput{
     SELECT("[FUSION][SELECT]"),
     CHANGE_EVENT_DATE("[FUSION][CHANGE_EVENT_DATE]"),
     PROVIDE_DATE("[FUSION][PROVIDE_DATE]"),
+    PROVIDE_DAY("[FUSION][PROVIDE_DAY]"),
     ;
     
     

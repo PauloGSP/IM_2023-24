@@ -28,8 +28,12 @@ public class GenFusionSCXML {
 
     
     fg.Complementary(Touch.SELECT, Speech.PROVIDE_DATE, Output.CHANGE_EVENT_DATE);
+    fg.Complementary(Touch.SELECT, Speech.PROVIDE_DAY, Output.CHANGE_EVENT_DATE);
+    
     fg.Single(Touch.SELECT, Output.SELECT);
     fg.Single(Speech.PROVIDE_DATE, Output.PROVIDE_DATE);
+    fg.Single(Speech.PROVIDE_DAY, Output.PROVIDE_DAY);
+    
     fg.Redundancy(Speech.DELETE_EVENT, Touch.DELETE_EVENT,Output.DELETE_EVENT);  
     /*
     
